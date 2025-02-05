@@ -1,8 +1,3 @@
-````
-Got it! Since you're using **Bun** as your runtime and package manager, I'll update the `README.md` file to reflect that. Here's the updated version tailored for Bun:
-
----
-
 # Hostify Project
 
 Welcome to the **Hostify** project! This is a web application built with modern technologies. Follow the steps below to set up and run the project on your local machine.
@@ -16,7 +11,8 @@ Before you begin, ensure you have the following installed:
 - [Bun](https://bun.sh/) (v1.0 or higher)
 - [Prisma](https://www.prisma.io/) (installed globally via `bun add -g prisma`)
 - [Git](https://git-scm.com/) (for version control)
-- A database (e.g., PostgreSQL, MySQL, or SQLite)
+- [PostgreSQL]() (database)
+- [Postman](https://www.postman.com/) (optional, for API testing)
 
 ---
 
@@ -27,9 +23,9 @@ Before you begin, ensure you have the following installed:
 First, clone the repository to your local machine:
 
 ```bash
-git clone https://github.com/your-username/hostify.git
-cd hostify
-````
+git clone https://github.com/LaithMahdi/Hostify.git
+cd Hostify
+```
 
 ### 2. Install Dependencies
 
@@ -73,6 +69,31 @@ bun run dev
 ```
 
 This will start the server using `tsx watch` and automatically restart it whenever you make changes to the code.
+
+---
+
+## Testing the API with Postman
+
+A Postman collection is provided in the root of the project to help you test the API endpoints. Here's how to use it:
+
+1. **Install Postman**: If you don't have Postman installed, download and install it from [here](https://www.postman.com/downloads/).
+
+2. **Import the Collection**:
+
+   - Open Postman.
+   - Click on the **Import** button.
+   - Select the `Hostify.postman_collection.json` file located in the root of the project.
+
+3. **Set Up Environment Variables in Postman**:
+
+   - Create a new environment in Postman (e.g., `Hostify Local`).
+   - Add the following variables:
+     - `base_url`: Set this to `http://localhost:3000` (or your server's URL).
+     - `access_token`: Leave this blank; it will be populated after you log in.
+
+4. **Run the Requests**:
+   - Use the imported collection to test the API endpoints.
+   - Start with the **Auth** requests to log in and obtain an access token.
 
 ---
 
@@ -136,14 +157,8 @@ If you have any questions or run into issues, feel free to open an issue on GitH
 
 ---
 
-### Key Changes for Bun:
+### Key Additions:
 
-1. Replaced `npm` or `yarn` commands with `bun` commands.
-2. Updated the installation and script execution steps to use Bun.
-3. Ensured compatibility with Bun's runtime and package management.
-
-This `README.md` is now optimized for Bun and provides clear instructions for your friend (or any contributor) to set up and run the project. Let me know if you need further adjustments! 🚀
-
-```
-
-```
+1. **Postman Collection Section**: Added a dedicated section explaining how to use the Postman collection for API testing.
+2. **Steps for Importing and Using the Collection**: Provided clear instructions for importing the collection and setting up environment variables in Postman.
+3. **Encouraged Testing**: Highlighted the importance of testing the API using the provided collection.
