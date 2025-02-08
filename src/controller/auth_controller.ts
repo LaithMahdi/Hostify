@@ -4,6 +4,8 @@ import { db } from "@/lib/prisma";
 import { userLoginSchema, userRegisterSchema } from "@/schemas";
 import { zValidator } from "@hono/zod-validator";
 import { sign } from "hono/jwt";
+import { authMiddleware } from "@/middleware/auth_middleware";
+import { JWT_SECRET } from "@/dotenv_config";
 
 const app = new Hono()
   .post("/register", zValidator("json", userRegisterSchema), async (c) => {
@@ -53,10 +55,35 @@ const app = new Hono()
         email: user.email,
         exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 2, // 2 days
       },
-      "secret"
+      JWT_SECRET
     );
 
     return c.json({ success: true, token }, 200);
   })
-  .post("/logout", async (c) => {});
+  .post("/logout", authMiddleware, async (c) => {
+    const user = c.get("user");
+
+    const expiredToken = await sign(
+      {
+        id: user.id,
+        email: user.email,
+        exp: Math.floor(Date.now() / 1000) + 1,
+      },
+      JWT_SECRET
+    );
+
+    return c.json({ success: true, token: expiredToken }, 200);
+  })
+  .get("/me", authMiddleware, async (c) => {
+    const user = c.get("user");
+
+    const formattedUser = {
+      id: user.id,
+      fullName: user.fullName,
+      email: user.email,
+      role: user.role,
+    };
+
+    return c.json({ success: true, formattedUser }, 200);
+  });
 export default app;
