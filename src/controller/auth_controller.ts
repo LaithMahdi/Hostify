@@ -60,20 +60,6 @@ const app = new Hono()
 
     return c.json({ success: true, token }, 200);
   })
-  .post("/logout", authMiddleware, async (c) => {
-    const user = c.get("user");
-
-    const expiredToken = await sign(
-      {
-        id: user.id,
-        email: user.email,
-        exp: Math.floor(Date.now() / 1000) + 1,
-      },
-      JWT_SECRET
-    );
-
-    return c.json({ success: true, token: expiredToken }, 200);
-  })
   .get("/me", authMiddleware, async (c) => {
     const user = c.get("user");
 
@@ -84,6 +70,6 @@ const app = new Hono()
       role: user.role,
     };
 
-    return c.json({ success: true, formattedUser }, 200);
+    return c.json({ success: true, data: formattedUser }, 200);
   });
 export default app;

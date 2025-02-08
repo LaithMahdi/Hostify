@@ -6,7 +6,7 @@
     "generate": "prisma generate",
     "db": "prisma db push",
     "studio": "prisma studio -p 8881",
-    "reset": "prisma db reset --force"
+    "reset": "prisma migrate reset"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.8",

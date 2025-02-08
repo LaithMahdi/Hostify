@@ -23,7 +23,7 @@ export const authMiddleware = createMiddleware<AdditionalContext>(
 
     try {
       // Verify the token and extract the payload
-      const payload = (await verify(JWT_SECRET, token)) as PayloadType;
+      const payload = (await verify(token, JWT_SECRET)) as PayloadType;
 
       // Look up the user in the database using the user ID from the payload
       const user = await db.user.findFirst({
