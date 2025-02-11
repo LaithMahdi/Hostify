@@ -1,7 +1,28 @@
-import dotenv from "dotenv";
+import "dotenv/config";
+import { z } from "zod";
 
-dotenv.config({ path: ".env" });
+console.log("🔐 Loading environment variables...");
 
-export const PORT = process.env.PORT || 3001;
+const serverSchema = z.object({
+  // Node
+  PORT: z.string().min(1),
+  JWT_SECRET: z.string().min(1),
+});
 
-export const JWT_SECRET = process.env.JWT_SECRET!;
+const _serverEnv = serverSchema.safeParse(process.env);
+
+if (!_serverEnv.success) {
+  console.error("❌ Invalid environment variables:\n");
+  _serverEnv.error.issues.forEach((issue) => {
+    console.error(issue);
+  });
+  throw new Error("Invalid environment variables");
+}
+
+const { PORT, JWT_SECRET } = _serverEnv.data;
+
+export const env = {
+  PORT,
+  JWT_SECRET,
+};
+console.log("✅ Environment variables loaded");

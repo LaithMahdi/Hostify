@@ -1,8 +1,8 @@
 import { createMiddleware } from "hono/factory";
 import { verify } from "hono/jwt";
 import { AdditionalContext, PayloadType } from "@/types";
-import { JWT_SECRET } from "@/dotenv_config";
 import { db } from "@/lib/prisma";
+import { env } from "@/dotenv_config";
 
 // Create an authentication middleware using Hono's middleware factory
 export const authMiddleware = createMiddleware<AdditionalContext>(
@@ -23,7 +23,7 @@ export const authMiddleware = createMiddleware<AdditionalContext>(
 
     try {
       // Verify the token and extract the payload
-      const payload = (await verify(token, JWT_SECRET)) as PayloadType;
+      const payload = (await verify(token, env.JWT_SECRET)) as PayloadType;
 
       // Look up the user in the database using the user ID from the payload
       const user = await db.user.findFirst({

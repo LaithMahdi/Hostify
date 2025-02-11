@@ -5,7 +5,7 @@ import { userLoginSchema, userRegisterSchema } from "@/schemas";
 import { zValidator } from "@hono/zod-validator";
 import { sign } from "hono/jwt";
 import { authMiddleware } from "@/middleware/auth_middleware";
-import { JWT_SECRET } from "@/dotenv_config";
+import { env } from "@/dotenv_config";
 
 const app = new Hono()
   .post("/register", zValidator("json", userRegisterSchema), async (c) => {
@@ -55,7 +55,7 @@ const app = new Hono()
         email: user.email,
         exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 2, // 2 days
       },
-      JWT_SECRET
+      env.JWT_SECRET
     );
 
     return c.json({ success: true, token }, 200);
