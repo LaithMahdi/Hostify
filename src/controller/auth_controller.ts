@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import argon2 from "argon2";
 import { db } from "@/lib/prisma";
 import { userLoginSchema, userRegisterSchema } from "@/schemas";
-import { zValidator } from "@hono/zod-validator";
+import { zValidator } from "@/middleware/zodValidator.middleware";
 import { sign } from "hono/jwt";
 import { authMiddleware } from "@/middleware/auth_middleware";
 import { env } from "@/dotenv_config";

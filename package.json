@@ -16,7 +16,8 @@
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.7",
     "hono": "^4.6.20",
-    "prisma": "^6.3.1"
+    "prisma": "^6.3.1",
+    "zod-validation-error": "^3.4.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
