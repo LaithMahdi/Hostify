@@ -33,10 +33,32 @@ const app = new Hono()
   })
   .get("/all", async (c) => {
     try {
-      const equipements = await db.equipment.findMany();
+      // Get query params for pagination
+      const page = Number(c.req.query("page") || 1);
+      const limit = Number(c.req.query("limit") || 10);
+      const skip = (page - 1) * limit;
+
+      // Get total count of items
+      const totalItems = await db.equipment.count();
+
+      // Fetch paginated items
+      const equipements = await db.equipment.findMany({
+        skip,
+        take: limit,
+      });
+
       return c.json({
         success: true,
         data: equipements,
+        totalPages: Math.ceil(totalItems / limit),
+        pageInfo: {
+          // page,
+          // limit,
+          // totalItems,
+
+          hasPrevious: page > 1,
+          hasNext: page * limit < totalItems,
+        },
       });
     } catch (error) {
       return c.json(
@@ -48,6 +70,7 @@ const app = new Hono()
       );
     }
   })
+
   .get("/:id", async (c) => {
     try {
       const { id } = c.req.param();
