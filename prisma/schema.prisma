@@ -30,10 +30,10 @@ model User{
   updatedAt DateTime @updatedAt
 }
 
-model Equipement {
-  id        String  @id @default(cuid())
+model Equipment {
+  id        Int    @id @default(autoincrement())
   name      String
   icon      String
-  is_active Boolean @default(true)
-
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now())
 }

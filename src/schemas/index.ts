@@ -29,3 +29,14 @@ export const userLoginSchema = z.object({
     .string()
     .min(6, { message: "Password must be at least 6 characters long." }),
 });
+
+export const equipmentSchema = z.object({
+  name: z
+    .string()
+    .min(3, { message: "Name must be at least 3 characters long." }),
+  icon: z.string().url().min(1, { message: "icon is required" }),
+  isActive: z
+    .boolean()
+    .default(true)
+    .describe("Equipment status, defaults to true if not provided."),
+});
