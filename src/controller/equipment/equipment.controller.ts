@@ -52,12 +52,8 @@ const app = new Hono()
         data: equipements,
         totalPages: Math.ceil(totalItems / limit),
         pageInfo: {
-          // page,
-          // limit,
-          // totalItems,
-
-          hasPrevious: page > 1,
-          hasNext: page * limit < totalItems,
+          hasPreviousPage: page > 1,
+          hasNextPage: page * limit < totalItems,
         },
       });
     } catch (error) {
