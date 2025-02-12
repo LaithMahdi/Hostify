@@ -2,8 +2,10 @@ import { Hono } from "hono";
 import argon2 from "argon2";
 import { db } from "@/lib/prisma";
 import { userLoginSchema, userRegisterSchema } from "@/schemas";
-import { zValidator } from "@hono/zod-validator";
+import { zValidator } from "@/middleware/zodValidator.middleware";
 import { sign } from "hono/jwt";
+import { authMiddleware } from "@/middleware/auth_middleware";
+import { env } from "@/dotenv_config";
 
 const app = new Hono()
   .post("/register", zValidator("json", userRegisterSchema), async (c) => {
@@ -53,10 +55,21 @@ const app = new Hono()
         email: user.email,
         exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 2, // 2 days
       },
-      "secret"
+      env.JWT_SECRET
     );
 
     return c.json({ success: true, token }, 200);
   })
-  .post("/logout", async (c) => {});
+  .get("/me", authMiddleware, async (c) => {
+    const user = c.get("user");
+
+    const formattedUser = {
+      id: user.id,
+      fullName: user.fullName,
+      email: user.email,
+      role: user.role,
+    };
+
+    return c.json({ success: true, data: formattedUser }, 200);
+  });
 export default app;
