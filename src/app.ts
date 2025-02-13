@@ -1,6 +1,5 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { csrf } from "hono/csrf";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import { secureHeaders } from "hono/secure-headers";
@@ -21,12 +20,12 @@ const app = new Hono()
       maxAge: 600,
     })
   )
-  .use(
-    "*",
-    csrf({
-      origin: "*",
-    })
-  )
+  // .use(
+  //   "*",
+  //   csrf({
+  //     origin: "*",
+  //   })
+  // )
   .use("*", prettyJSON())
   .use("*", secureHeaders())
   .use("*", timing())
