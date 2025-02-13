@@ -33,38 +33,32 @@ const app = new Hono()
   })
   .get("/all", async (c) => {
     try {
-      // Get query params for pagination
       const page = Number(c.req.query("page") || 1);
       const limit = Number(c.req.query("limit") || 10);
-      // Get search query and isActive query params for filtering data from db
       const search = c.req.query("search") || "";
-      const isActives = c.req.query("isActive") || "";
-      // Calculate skip value for pagination
-      const skip = page - 1;
-      // Get total count of items * limit;
+      const isActives = c.req.query("isActive");
 
-      const totalItems = await db.equipment.count();
+      const skip = (page - 1) * limit;
 
-      // Fetch paginated items
-      const equipements = await db.equipment.findMany({
-        skip,
-        take: limit,
-        where: {
-          name: {
-            contains: search,
-            mode: "insensitive",
-          },
-          isActive:
-            isActives === "true"
-              ? true
-              : isActives === "false"
-              ? false
-              : undefined,
+      const filters: any = {
+        name: {
+          contains: search,
+          mode: "insensitive",
         },
-        orderBy: {
-          id: "asc",
-        },
-      });
+      };
+
+      if (isActives === "true") filters.isActive = true;
+      else if (isActives === "false") filters.isActive = false;
+
+      const [totalItems, equipements] = await Promise.all([
+        db.equipment.count({ where: filters }),
+        db.equipment.findMany({
+          skip,
+          take: limit,
+          where: filters,
+          orderBy: { id: "asc" },
+        }),
+      ]);
 
       return c.json({
         success: true,
@@ -85,7 +79,6 @@ const app = new Hono()
       );
     }
   })
-
   .get("/:id", async (c) => {
     try {
       const { id } = c.req.param();
