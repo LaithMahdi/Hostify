@@ -15,7 +15,7 @@ const app = new Hono()
     "*",
     cors({
       origin: "*",
-      allowMethods: ["GET", "POST", "PUT", "DELETE"],
+      allowMethods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
       credentials: false,
       maxAge: 600,
     })

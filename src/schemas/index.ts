@@ -40,3 +40,9 @@ export const equipmentSchema = z.object({
     .default(true)
     .describe("Equipment status, defaults to true if not provided."),
 });
+
+export const patchEquipmentSchema = z.object({
+  name: z.string().optional(),
+  icon: z.string().url().optional(),
+  isActive: z.boolean().optional(),
+});

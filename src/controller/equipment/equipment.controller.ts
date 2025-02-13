@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { db } from "@/lib/prisma";
 import { zValidator } from "@hono/zod-validator";
-import { equipmentSchema } from "@/schemas";
+import { equipmentSchema, patchEquipmentSchema } from "@/schemas";
 import { doesEquipmentExist } from "./equipment.service";
 
 const app = new Hono()
@@ -174,6 +174,33 @@ const app = new Hono()
         500
       );
     }
+  })
+  .patch("/patch/:id", zValidator("json", patchEquipmentSchema), async (c) => {
+    const { id } = c.req.param();
+
+    // find the equipement by id
+    if (!(await doesEquipmentExist(Number(id)))) {
+      return c.json(
+        {
+          success: false,
+          error: "Équipement non trouvé",
+        },
+        404
+      );
+    }
+
+    const { name, icon, isActive } = await c.req.valid("json");
+
+    const updatedEquipement = await db.equipment.update({
+      where: { id: Number(id) },
+      data: { name, icon, isActive },
+    });
+
+    return c.json({
+      success: true,
+      message: "Équipement mis à jour avec succès",
+      data: updatedEquipement,
+    });
   });
 
 export default app;
