@@ -63,7 +63,7 @@ const app = new Hono()
       return c.json({
         success: true,
         data: equipements,
-        totalPages: Math.ceil(totalItems / limit),
+        totalItems: totalItems,
         pageInfo: {
           hasPreviousPage: page > 1,
           hasNextPage: page * limit < totalItems,
