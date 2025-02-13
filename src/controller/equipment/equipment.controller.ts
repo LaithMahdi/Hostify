@@ -36,15 +36,34 @@ const app = new Hono()
       // Get query params for pagination
       const page = Number(c.req.query("page") || 1);
       const limit = Number(c.req.query("limit") || 10);
-      const skip = (page - 1) * limit;
+      // Get search query and isActive query params for filtering data from db
+      const search = c.req.query("search") || "";
+      const isActives = c.req.query("isActive") || "";
+      // Calculate skip value for pagination
+      const skip = page - 1;
+      // Get total count of items * limit;
 
-      // Get total count of items
       const totalItems = await db.equipment.count();
 
       // Fetch paginated items
       const equipements = await db.equipment.findMany({
         skip,
         take: limit,
+        where: {
+          name: {
+            contains: search,
+            mode: "insensitive",
+          },
+          isActive:
+            isActives === "true"
+              ? true
+              : isActives === "false"
+              ? false
+              : undefined,
+        },
+        orderBy: {
+          id: "asc",
+        },
       });
 
       return c.json({
