@@ -7,10 +7,10 @@ import { doesEquipmentExist } from "./equipment.service";
 const app = new Hono()
   .post("/create", zValidator("json", equipmentSchema), async (c) => {
     try {
-      const { name, icon, isActive } = await c.req.valid("json");
+      const { name, icon, isActive, description } = await c.req.valid("json");
 
       const newEquipement = await db.equipment.create({
-        data: { name, icon, isActive },
+        data: { name, icon, isActive, description },
       });
 
       return c.json(
@@ -113,7 +113,7 @@ const app = new Hono()
   .put("/update/:id", zValidator("json", equipmentSchema), async (c) => {
     try {
       const id = c.req.param("id");
-      const { name, icon, isActive } = await c.req.valid("json");
+      const { name, icon, isActive, description } = await c.req.valid("json");
 
       // find the equipement by id
       if (!(await doesEquipmentExist(Number(id)))) {
@@ -128,7 +128,7 @@ const app = new Hono()
 
       const updatedEquipement = await db.equipment.update({
         where: { id: Number(id) },
-        data: { name, icon, isActive },
+        data: { name, icon, isActive, description },
       });
 
       return c.json({
@@ -189,11 +189,11 @@ const app = new Hono()
       );
     }
 
-    const { name, icon, isActive } = await c.req.valid("json");
+    const { name, icon, isActive, description } = await c.req.valid("json");
 
     const updatedEquipement = await db.equipment.update({
       where: { id: Number(id) },
-      data: { name, icon, isActive },
+      data: { name, icon, isActive, description },
     });
 
     return c.json({
