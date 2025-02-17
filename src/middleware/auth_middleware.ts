@@ -24,7 +24,7 @@ export const authMiddleware = createMiddleware<AdditionalContext>(
 
       // Look up the user in the database using the user ID from the payload
       const user = await db.user.findFirst({
-        where: { id: payload.userId }, // Make sure this matches your token payload structure
+        where: { id: payload.id }, // Make sure this matches your token payload structure
       });
 
       // If no user is found, return an unauthorized error response

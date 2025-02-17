@@ -3,6 +3,7 @@ import { db } from "@/lib/prisma";
 import { zValidator } from "@hono/zod-validator";
 import { equipmentSchema, patchEquipmentSchema } from "@/schemas";
 import { doesEquipmentExist } from "./equipment.service";
+import { authMiddleware } from "@/middleware/auth_middleware";
 
 const app = new Hono()
   .post("/create", zValidator("json", equipmentSchema), async (c) => {
@@ -31,7 +32,7 @@ const app = new Hono()
       );
     }
   })
-  .get("/all", async (c) => {
+  .get("/all", authMiddleware, async (c) => {
     try {
       const page = Number(c.req.query("page") || 1);
       const limit = Number(c.req.query("limit") || 10);
