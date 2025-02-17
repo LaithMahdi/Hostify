@@ -3,9 +3,10 @@ import argon2 from "argon2";
 import { db } from "@/lib/prisma";
 import { userLoginSchema, userRegisterSchema } from "@/schemas";
 import { zValidator } from "@/middleware/zodValidator.middleware";
-import { sign } from "hono/jwt";
 import { authMiddleware } from "@/middleware/auth_middleware";
 import { env } from "@/dotenv_config";
+import { setCookie } from "hono/cookie";
+import { sign } from "hono/jwt";
 
 const app = new Hono()
   .post("/register", zValidator("json", userRegisterSchema), async (c) => {
@@ -49,16 +50,26 @@ const app = new Hono()
       return c.json({ error: "Invalid password" }, 401);
     }
 
+    // Generate JWT token
     const token = await sign(
       {
         id: user.id,
         email: user.email,
-        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 2, // 2 days
+        role: user.role,
       },
       env.JWT_SECRET
     );
 
-    return c.json({ success: true, token }, 200);
+    // Set cookie with JWT token
+    setCookie(c, env.AUTH_COOKIE, token, {
+      path: "/",
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+    });
+
+    return c.json({ success: true }, 200);
   })
   .get("/me", authMiddleware, async (c) => {
     const user = c.get("user");
@@ -72,4 +83,5 @@ const app = new Hono()
 
     return c.json({ success: true, data: formattedUser }, 200);
   });
+
 export default app;

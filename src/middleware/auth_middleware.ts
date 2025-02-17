@@ -3,23 +3,20 @@ import { verify } from "hono/jwt";
 import { AdditionalContext, PayloadType } from "@/types";
 import { db } from "@/lib/prisma";
 import { env } from "@/dotenv_config";
+import { getCookie } from "hono/cookie";
 
-// Create an authentication middleware using Hono's middleware factory
 export const authMiddleware = createMiddleware<AdditionalContext>(
   async (c, next) => {
-    // Retrieve the token from the Authorization header
-    const authHeader = c.req.header("Authorization");
+    // Retrieve the token from the cookie
+    const token = getCookie(c, env.AUTH_COOKIE);
 
-    // If no Authorization header or token is provided, return an unauthorized error response
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    // If no token is found in the cookie, return an unauthorized error response
+    if (!token) {
       return c.json(
-        { error: "Unauthorized access - Bearer token is required." },
+        { error: "Unauthorized access - authentication required." },
         401
       );
     }
-
-    // Extract the token by removing the 'Bearer ' prefix
-    const token = authHeader.slice(7);
 
     try {
       // Verify the token and extract the payload
@@ -27,7 +24,7 @@ export const authMiddleware = createMiddleware<AdditionalContext>(
 
       // Look up the user in the database using the user ID from the payload
       const user = await db.user.findFirst({
-        where: { id: payload.userId },
+        where: { id: payload.userId }, // Make sure this matches your token payload structure
       });
 
       // If no user is found, return an unauthorized error response
@@ -35,14 +32,12 @@ export const authMiddleware = createMiddleware<AdditionalContext>(
         return c.json({ error: "Unauthorized access - user not found." }, 401);
       }
 
-      // Store the user and role in the context for later use in the request
+      // Store the user in the context for later use in the request
       c.set("user", user);
 
       // Proceed to the next middleware or route handler
       await next();
     } catch (error) {
-      // If token verification fails or an error occurs, return an unauthorized error response
-
       return c.json(
         { error: "Unauthorized access - invalid or expired token." },
         401
