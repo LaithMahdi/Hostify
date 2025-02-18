@@ -1,6 +1,5 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import { secureHeaders } from "hono/secure-headers";
 import { timing } from "hono/timing";
@@ -10,14 +9,13 @@ import equipementRoutes from "@/controller/equipment/equipment.controller";
 const app = new Hono()
   .basePath("/api/v1")
   // Middlewares
-  .use("*", logger())
   .use(
     "*",
     cors({
-      origin: "*",
-      allowHeaders: ["Content-Type"],
+      origin: "http://localhost:3000",
+      allowHeaders: ["Content-Type", "Authorization"],
       allowMethods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-      credentials: false,
+      credentials: true,
       maxAge: 600,
     })
   )

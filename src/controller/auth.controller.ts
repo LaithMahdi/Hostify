@@ -56,6 +56,7 @@ const app = new Hono()
         id: user.id,
         email: user.email,
         role: user.role,
+        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30, // 30 days
       },
       env.JWT_SECRET
     );
@@ -69,7 +70,7 @@ const app = new Hono()
       maxAge: 60 * 60 * 24 * 30, // 30 days
     });
 
-    return c.json({ success: true }, 200);
+    return c.json({ success: true, token }, 200);
   })
   .get("/me", authMiddleware, async (c) => {
     const user = c.get("user");
