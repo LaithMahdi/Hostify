@@ -4,34 +4,42 @@ import { zValidator } from "@hono/zod-validator";
 import { equipmentSchema, patchEquipmentSchema } from "@/schemas";
 import { doesEquipmentExist } from "./equipment.service";
 import { authMiddleware } from "@/middleware/auth_middleware";
+import { roleMiddleware } from "@/middleware/role_middleware";
+import { Role } from "@prisma/client";
 
 const app = new Hono()
-  .post("/create", zValidator("json", equipmentSchema), async (c) => {
-    try {
-      const { name, icon, isActive, description } = await c.req.valid("json");
+  .post(
+    "/create",
+    zValidator("json", equipmentSchema),
+    authMiddleware,
+    roleMiddleware([Role.ADMIN, Role.OWNER]),
+    async (c) => {
+      try {
+        const { name, icon, isActive, description } = await c.req.valid("json");
 
-      const newEquipement = await db.equipment.create({
-        data: { name, icon, isActive, description },
-      });
+        const newEquipement = await db.equipment.create({
+          data: { name, icon, isActive, description },
+        });
 
-      return c.json(
-        {
-          success: true,
-          message: "Équipement ajouté avec succès",
-          data: newEquipement,
-        },
-        201
-      );
-    } catch (error) {
-      return c.json(
-        {
-          success: false,
-          error: "Erreur lors de l'ajout de l'équipement",
-        },
-        500
-      );
+        return c.json(
+          {
+            success: true,
+            message: "Équipement ajouté avec succès",
+            data: newEquipement,
+          },
+          201
+        );
+      } catch (error) {
+        return c.json(
+          {
+            success: false,
+            error: "Erreur lors de l'ajout de l'équipement",
+          },
+          500
+        );
+      }
     }
-  })
+  )
   .get("/all", authMiddleware, async (c) => {
     try {
       const page = Number(c.req.query("page") || 1);
@@ -80,7 +88,7 @@ const app = new Hono()
       );
     }
   })
-  .get("/:id", async (c) => {
+  .get("/:id", authMiddleware, async (c) => {
     try {
       const { id } = c.req.param();
 
@@ -111,10 +119,89 @@ const app = new Hono()
       );
     }
   })
-  .put("/update/:id", zValidator("json", equipmentSchema), async (c) => {
-    try {
-      const id = c.req.param("id");
-      const { name, icon, isActive, description } = await c.req.valid("json");
+  .put(
+    "/update/:id",
+    zValidator("json", equipmentSchema),
+    authMiddleware,
+    roleMiddleware([Role.ADMIN, Role.OWNER]),
+    async (c) => {
+      try {
+        const id = c.req.param("id");
+        const { name, icon, isActive, description } = await c.req.valid("json");
+
+        // find the equipement by id
+        if (!(await doesEquipmentExist(Number(id)))) {
+          return c.json(
+            {
+              success: false,
+              error: "Équipement non trouvé",
+            },
+            404
+          );
+        }
+
+        const updatedEquipement = await db.equipment.update({
+          where: { id: Number(id) },
+          data: { name, icon, isActive, description },
+        });
+
+        return c.json({
+          success: true,
+          message: "Équipement mis à jour avec succès",
+          data: updatedEquipement,
+        });
+      } catch (error) {
+        return c.json(
+          {
+            success: false,
+            error: "Erreur lors de la mise à jour de l'équipement",
+          },
+          500
+        );
+      }
+    }
+  )
+  .delete(
+    "/delete/:id",
+    authMiddleware,
+    roleMiddleware([Role.ADMIN, Role.OWNER]),
+    async (c) => {
+      try {
+        const { id } = c.req.param();
+        console.log(id);
+        // find the equipement by id
+        if (!(await doesEquipmentExist(Number(id)))) {
+          return c.json(
+            {
+              success: false,
+              error: "Équipement non trouvé",
+            },
+            404
+          );
+        }
+        await db.equipment.delete({ where: { id: Number(id) } });
+        return c.json({
+          success: true,
+          message: "Équipement supprimé avec succès",
+        });
+      } catch (error) {
+        return c.json(
+          {
+            success: false,
+            error: "Erreur lors de la suppression de l'équipement",
+          },
+          500
+        );
+      }
+    }
+  )
+  .patch(
+    "/patch/:id",
+    zValidator("json", patchEquipmentSchema),
+    authMiddleware,
+    roleMiddleware([Role.ADMIN, Role.OWNER]),
+    async (c) => {
+      const { id } = c.req.param();
 
       // find the equipement by id
       if (!(await doesEquipmentExist(Number(id)))) {
@@ -126,6 +213,8 @@ const app = new Hono()
           404
         );
       }
+
+      const { name, icon, isActive, description } = await c.req.valid("json");
 
       const updatedEquipement = await db.equipment.update({
         where: { id: Number(id) },
@@ -137,71 +226,7 @@ const app = new Hono()
         message: "Équipement mis à jour avec succès",
         data: updatedEquipement,
       });
-    } catch (error) {
-      return c.json(
-        {
-          success: false,
-          error: "Erreur lors de la mise à jour de l'équipement",
-        },
-        500
-      );
     }
-  })
-  .delete("/delete/:id", async (c) => {
-    try {
-      const { id } = c.req.param();
-      console.log(id);
-      // find the equipement by id
-      if (!(await doesEquipmentExist(Number(id)))) {
-        return c.json(
-          {
-            success: false,
-            error: "Équipement non trouvé",
-          },
-          404
-        );
-      }
-      await db.equipment.delete({ where: { id: Number(id) } });
-      return c.json({
-        success: true,
-        message: "Équipement supprimé avec succès",
-      });
-    } catch (error) {
-      return c.json(
-        {
-          success: false,
-          error: "Erreur lors de la suppression de l'équipement",
-        },
-        500
-      );
-    }
-  })
-  .patch("/patch/:id", zValidator("json", patchEquipmentSchema), async (c) => {
-    const { id } = c.req.param();
-
-    // find the equipement by id
-    if (!(await doesEquipmentExist(Number(id)))) {
-      return c.json(
-        {
-          success: false,
-          error: "Équipement non trouvé",
-        },
-        404
-      );
-    }
-
-    const { name, icon, isActive, description } = await c.req.valid("json");
-
-    const updatedEquipement = await db.equipment.update({
-      where: { id: Number(id) },
-      data: { name, icon, isActive, description },
-    });
-
-    return c.json({
-      success: true,
-      message: "Équipement mis à jour avec succès",
-      data: updatedEquipement,
-    });
-  });
+  );
 
 export default app;

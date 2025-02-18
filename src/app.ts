@@ -5,6 +5,7 @@ import { secureHeaders } from "hono/secure-headers";
 import { timing } from "hono/timing";
 import authRoutes from "@/controller/auth.controller";
 import equipementRoutes from "@/controller/equipment/equipment.controller";
+import { env } from "./dotenv_config";
 
 const app = new Hono()
   .basePath("/api/v1")
@@ -12,7 +13,7 @@ const app = new Hono()
   .use(
     "*",
     cors({
-      origin: "http://localhost:3000",
+      origin: env.NEXT_FRONT_URL,
       allowHeaders: ["Content-Type", "Authorization"],
       allowMethods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
       credentials: true,
