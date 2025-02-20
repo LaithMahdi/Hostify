@@ -1,7 +1,7 @@
 import { User } from "@prisma/client";
 
 export type PayloadType = {
-  userId: string;
+  id: string;
   role: string;
 };
 

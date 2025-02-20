@@ -15,9 +15,9 @@ export const userRegisterSchema = z.object({
     .min(6, { message: "Password must be at least 6 characters long." }),
   role: z
     .nativeEnum(Role)
-    .default(Role.GUEST)
+    .default(Role.USER)
     .optional()
-    .describe("User role, defaults to GUEST if not provided."),
+    .describe("User role, defaults to USER if not provided."),
 });
 
 export const userLoginSchema = z.object({

@@ -61,6 +61,7 @@ enum RoomStatus {
 
 enum Role {
   GUEST
-  MEMBER
+  USER
+  OWNER
   ADMIN
 }
