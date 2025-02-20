@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,28 +7,60 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-enum Role {
-  GUEST
-  MEMBER
-  ADMIN
-}
-
-model User{
-  id String @id @default(cuid())
-  fullName String
-  email String @unique
-  password String
-  role Role @default(GUEST)
+model User {
+  id        String   @id @default(cuid())
+  fullName  String
+  email     String   @unique
+  password  String
+  role      Role     @default(GUEST)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Equipment {
-  id        Int    @id @default(autoincrement())
-  name      String
-  icon      String
-  description String @default("")
-  isActive Boolean @default(true)
-  createdAt DateTime @default(now())
+  id          Int      @id @default(autoincrement())
+  name        String
+  icon        String
+  description String   @default("")
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
+
+model Guesthouse {
+  id            Int      @id @default(autoincrement())
+  name          String
+  address       String
+  region        String
+  numberOfRooms Int
+  description   String   @default("")
+  rating        Float?
+  createdAt     DateTime @default(now())
+}
+model Room {
+  id             Int       @id @default(autoincrement())
+  nbRooms        Int
+  type           RoomType
+  pricePerNight  Float
+  status         RoomStatus
+  description    String    @default("")
+  createdAt      DateTime  @default(now())
+}
+
+enum RoomType {
+  SINGLE
+  DOUBLE
+  SUITE
+  FAMILY
+}
+
+enum RoomStatus {
+  AVAILABLE
+  BOOKED
+  MAINTENANCE
+}
+
+enum Role {
+  GUEST
+  MEMBER
+  ADMIN
 }

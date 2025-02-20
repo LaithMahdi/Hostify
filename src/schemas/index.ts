@@ -48,3 +48,35 @@ export const patchEquipmentSchema = z.object({
   isActive: z.boolean().optional(),
   description: z.string().optional(),
 });
+export const guesthouseSchema = z.object({
+  name: z.string().min(3, { message: "Le nom doit contenir au moins 3 caractères." }),
+  address: z.string().min(1, { message: "L'adresse est requise." }),
+  region: z.string().min(1, { message: "La région est requise." }),
+  numberOfRooms: z.number().int().positive({ message: "Le nombre de chambres doit être un entier positif." }),
+  description: z.string().optional(),
+  rating: z.number().optional(),
+});
+export const patchGuesthouseSchema = guesthouseSchema.partial();
+
+
+
+export const roomSchema = z.object({
+  nbRooms: z
+    .number()
+    .int()
+    .positive({ message: "Number of rooms must be a positive integer." }),
+  type: z.enum(["SINGLE", "DOUBLE", "SUITE", "FAMILY"]),
+  pricePerNight: z
+    .number()
+    .positive({ message: "Price per night must be a positive number." }),
+  status: z.enum(["AVAILABLE", "BOOKED", "MAINTENANCE"]),
+  description: z.string().optional(),
+});
+
+export const patchRoomSchema = z.object({
+  nbRooms: z.number().int().positive().optional(),
+  type: z.enum(["SINGLE", "DOUBLE", "SUITE", "FAMILY"]).optional(),
+  pricePerNight: z.number().positive().optional(),
+  status: z.enum(["AVAILABLE", "BOOKED", "MAINTENANCE"]).optional(),
+  description: z.string().optional(),
+});
