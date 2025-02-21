@@ -3,11 +3,11 @@ import { cors } from "hono/cors";
 import { prettyJSON } from "hono/pretty-json";
 import { secureHeaders } from "hono/secure-headers";
 import { timing } from "hono/timing";
+import { env } from "@/dotenv_config";
 import authRoutes from "@/controller/auth.controller";
 import equipementRoutes from "@/controller/equipment/equipment.controller";
-import guesthouseRoutes from "@/controller/Guesthouse/guesthouge.controller";
-import roomRoutes from "@/controller/Room/room.controller";
-import { env } from "./dotenv_config";
+import guesthouseRoutes from "@/controller/guest-house/guest.house.controller";
+import roomRoutes from "@/controller/room/room.controller";
 
 const app = new Hono()
   .basePath("/api/v1")
@@ -34,7 +34,7 @@ const app = new Hono()
   // Routes
   .route("/auth", authRoutes)
   .route("/equipment", equipementRoutes)
-  .route("/guesthouse", guesthouseRoutes)
+  .route("/guest-house", guesthouseRoutes)
   .route("/room", roomRoutes);
 
 // Export the app TYPE

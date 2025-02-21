@@ -37,7 +37,7 @@ model GuestHouse {
   isPetFriendly   Boolean @default(false)
   rooms         Room[] 
   contacts      Contact[] 
-
+  
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
