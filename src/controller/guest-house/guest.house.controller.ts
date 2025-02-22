@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { db } from "@/lib/prisma";
 import { zValidator } from "@hono/zod-validator";
-import { guestHouseSchema, patchGuesthouseSchema } from "@/schemas";
+import { guestHouseSchema, patchGuestHouseSchema } from "@/schemas";
 import { authMiddleware } from "@/middleware/auth_middleware";
 import { doesGuestHouseExist } from "./guest.house.service";
 
@@ -25,6 +25,7 @@ const app = new Hono()
           region,
           rating,
           rooms,
+          images,
         } = await c.req.valid("json");
 
         const roomIds = await db.room.findMany({
@@ -45,6 +46,9 @@ const app = new Hono()
             rating,
             rooms: {
               connect: roomIds.map((room) => ({ id: room.id })),
+            },
+            images: {
+              createMany: { data: images?.map((url) => ({ url })) || [] },
             },
           },
         });
@@ -144,6 +148,7 @@ const app = new Hono()
         region,
         rating,
         rooms,
+        images,
       } = await c.req.valid("json");
 
       if (!(await doesGuestHouseExist(Number(id)))) {
@@ -170,6 +175,9 @@ const app = new Hono()
           rooms: {
             connect: roomIds.map((room) => ({ id: room.id })),
           },
+          images: {
+            createMany: { data: images?.map((url) => ({ url })) || [] },
+          },
         },
       });
 
@@ -193,7 +201,8 @@ const app = new Hono()
       if (!(await doesGuestHouseExist(Number(id)))) {
         return c.json({ success: false, error: "Guest house not found" }, 404);
       }
-
+      await db.image.deleteMany({ where: { guestHouseId: Number(id) } });
+      await db.contact.deleteMany({ where: { guestHouseId: Number(id) } });
       await db.guestHouse.delete({ where: { id: Number(id) } });
 
       return c.json({
@@ -209,7 +218,7 @@ const app = new Hono()
   })
 
   // Mise à jour partielle d'une guesthouse
-  .patch("/patch/:id", zValidator("json", patchGuesthouseSchema), async (c) => {
+  .patch("/patch/:id", zValidator("json", patchGuestHouseSchema), async (c) => {
     try {
       const { id } = c.req.param();
 
@@ -227,6 +236,7 @@ const app = new Hono()
         region,
         rating,
         rooms,
+        images,
       } = await c.req.valid("json");
 
       const roomIds = await db.room.findMany({
@@ -248,6 +258,9 @@ const app = new Hono()
           rating,
           rooms: {
             connect: roomIds.map((room) => ({ id: room.id })),
+          },
+          images: {
+            createMany: { data: images?.map((url) => ({ url })) || [] },
           },
         },
       });

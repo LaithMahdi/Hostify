@@ -36,6 +36,7 @@ model GuestHouse {
   hasParking      Boolean @default(false)
   isPetFriendly   Boolean @default(false)
   rooms         Room[] 
+  images        Image[]
   contacts      Contact[] 
   
   createdAt     DateTime @default(now())
@@ -52,6 +53,7 @@ model Room {
   hasBalcony      Boolean    @default(false)
   description    String?
   guestHouseId   Int     
+  images         Image[]
   guestHouse     GuestHouse @relation(fields: [guestHouseId], references: [id]) 
   isActive       Boolean    @default(true)
 
@@ -64,7 +66,19 @@ model Contact {
   type         ContactType 
   value        String   
   guestHouseId Int    
-  guestHouse   GuestHouse @relation(fields: [guestHouseId], references: [id]) 
+  guestHouse   GuestHouse? @relation(fields: [guestHouseId], references: [id]) 
+  createdAt    DateTime @default(now())
+}
+
+model Image {
+  id           Int      @id @default(autoincrement())
+  url          String
+
+  guestHouseId Int?    
+  guestHouse   GuestHouse? @relation(fields: [guestHouseId], references: [id]) 
+  roomId       Int?
+  room         Room? @relation(fields: [roomId], references: [id])
+
   createdAt    DateTime @default(now())
 }
 

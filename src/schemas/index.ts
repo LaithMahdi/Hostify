@@ -72,9 +72,10 @@ export const guestHouseSchema = z.object({
     })
   ),
   rooms: z.array(z.number()).optional(),
+  images: z.array(z.string()).optional(),
 });
 
-export const patchGuesthouseSchema = guestHouseSchema.partial();
+export const patchGuestHouseSchema = guestHouseSchema.partial();
 
 export const roomSchema = z.object({
   roomNumber: z.number().min(1, { message: "Room number is required." }),
@@ -89,6 +90,7 @@ export const roomSchema = z.object({
   description: z.string().optional(),
   guestHouseId: z.number().optional(),
   isActive: z.boolean().default(true),
+  images: z.array(z.string()).optional(),
 });
 
 export const patchRoomSchema = z.object({
@@ -101,4 +103,5 @@ export const patchRoomSchema = z.object({
   description: z.string().optional(),
   guestHouseId: z.number().optional(),
   isActive: z.boolean().optional(),
+  images: z.array(z.string()).optional(),
 });
