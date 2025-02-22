@@ -76,11 +76,16 @@ const app = new Hono()
       const page = Number(c.req.query("page") || 1);
       const limit = Number(c.req.query("limit") || 10);
       const search = c.req.query("search") || "";
+      const country = c.req.query("country") || "";
       const skip = (page - 1) * limit;
 
       const filters: any = {
         name: {
           contains: search,
+          mode: "insensitive",
+        },
+        region: {
+          contains: country,
           mode: "insensitive",
         },
       };
@@ -92,6 +97,7 @@ const app = new Hono()
           take: limit,
           where: filters,
           orderBy: { id: "asc" },
+          include: { rooms: true, images: true },
         }),
       ]);
 

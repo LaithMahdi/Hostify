@@ -17,6 +17,7 @@ const app = new Hono()
         description,
         guestHouseId,
         isActive,
+        images,
       } = await c.req.valid("json");
 
       // Création de la chambre
@@ -31,6 +32,9 @@ const app = new Hono()
           description,
           guestHouseId: guestHouseId!,
           isActive,
+          images: {
+            createMany: { data: images?.map((url) => ({ url })) || [] },
+          },
         },
       });
 
@@ -135,6 +139,7 @@ const app = new Hono()
         description,
         guestHouseId,
         isActive,
+        images,
       } = await c.req.valid("json");
 
       if (!(await doesRoomExist(Number(id)))) {
@@ -153,6 +158,9 @@ const app = new Hono()
           description,
           guestHouseId: guestHouseId!,
           isActive,
+          images: {
+            createMany: { data: images?.map((url) => ({ url })) || [] },
+          },
         },
       });
 
@@ -197,6 +205,7 @@ const app = new Hono()
       description,
       guestHouseId,
       isActive,
+      images,
     } = await c.req.valid("json");
 
     const updatedRoom = await db.room.update({
