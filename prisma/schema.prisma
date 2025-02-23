@@ -23,6 +23,8 @@ model Equipment {
   icon        String
   description String?
   isActive    Boolean  @default(true)
+  rooms       Room[]
+
   createdAt   DateTime @default(now())
 }
 
@@ -54,6 +56,7 @@ model Room {
   description    String?
   guestHouseId   Int     
   images         Image[]
+  equipment      Equipment[]
   guestHouse     GuestHouse @relation(fields: [guestHouseId], references: [id]) 
   isActive       Boolean    @default(true)
 
