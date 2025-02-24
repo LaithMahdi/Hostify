@@ -1,4 +1,4 @@
-import { Role } from "@prisma/client";
+import { ContactType, Role, RoomStatus, RoomType } from "@prisma/client";
 import z from "zod";
 
 export const userRegisterSchema = z.object({
@@ -48,35 +48,60 @@ export const patchEquipmentSchema = z.object({
   isActive: z.boolean().optional(),
   description: z.string().optional(),
 });
-export const guesthouseSchema = z.object({
-  name: z.string().min(3, { message: "Le nom doit contenir au moins 3 caractères." }),
-  address: z.string().min(1, { message: "L'adresse est requise." }),
-  region: z.string().min(1, { message: "La région est requise." }),
-  numberOfRooms: z.number().int().positive({ message: "Le nombre de chambres doit être un entier positif." }),
+
+export const guestHouseSchema = z.object({
+  name: z
+    .string()
+    .min(3, { message: "Name must be at least 3 characters long." }),
+  address: z
+    .string()
+    .min(3, { message: "Address must be at least 3 characters long." }),
+  region: z
+    .string()
+    .min(3, { message: "Region must be at least 3 characters long." }),
   description: z.string().optional(),
   rating: z.number().optional(),
+  hasParking: z.boolean().default(false),
+  isPetFriendly: z.boolean().default(false),
+  contacts: z.array(
+    z.object({
+      type: z.nativeEnum(ContactType).default(ContactType.PHONE),
+      value: z.string().min(3, {
+        message: "Contact value must be at least 3 characters long.",
+      }),
+    })
+  ),
+  rooms: z.array(z.number()).optional(),
+  images: z.array(z.string()).optional(),
 });
-export const patchGuesthouseSchema = guesthouseSchema.partial();
 
-
+export const patchGuestHouseSchema = guestHouseSchema.partial();
 
 export const roomSchema = z.object({
-  nbRooms: z
-    .number()
-    .int()
-    .positive({ message: "Number of rooms must be a positive integer." }),
-  type: z.enum(["SINGLE", "DOUBLE", "SUITE", "FAMILY"]),
+  roomNumber: z.number().min(1, { message: "Room number is required." }),
+  type: z.nativeEnum(RoomType).default(RoomType.SINGLE),
   pricePerNight: z
     .number()
-    .positive({ message: "Price per night must be a positive number." }),
-  status: z.enum(["AVAILABLE", "BOOKED", "MAINTENANCE"]),
+    .positive()
+    .min(1, { message: "Price per night is required." }),
+  status: z.nativeEnum(RoomStatus).default(RoomStatus.AVAILABLE),
+  capacity: z.number().positive().min(1, { message: "Capacity is required." }),
+  hasBalcony: z.boolean().default(false),
   description: z.string().optional(),
+  guestHouseId: z.number().optional(),
+  isActive: z.boolean().default(true),
+  images: z.array(z.string()).optional(),
 });
 
 export const patchRoomSchema = z.object({
-  nbRooms: z.number().int().positive().optional(),
-  type: z.enum(["SINGLE", "DOUBLE", "SUITE", "FAMILY"]).optional(),
-  pricePerNight: z.number().positive().optional(),
-  status: z.enum(["AVAILABLE", "BOOKED", "MAINTENANCE"]).optional(),
+  roomNumber: z.number().optional(),
+  type: z.nativeEnum(RoomType).optional(),
+  pricePerNight: z.number().optional(),
+  status: z.nativeEnum(RoomStatus).optional(),
+  capacity: z.number().optional(),
+  hasBalcony: z.boolean().optional(),
   description: z.string().optional(),
+  guestHouseId: z.number().optional(),
+  isActive: z.boolean().optional(),
+  images: z.array(z.string()).optional(),
 });

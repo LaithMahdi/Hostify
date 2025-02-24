@@ -2,22 +2,46 @@ import { Hono } from "hono";
 import { db } from "@/lib/prisma";
 import { zValidator } from "@hono/zod-validator";
 import { roomSchema, patchRoomSchema } from "@/schemas";
-import { doesRoomExist } from "./room.service";
+import { doesRoomExist } from "@/controller/room/room.service";
 
 const app = new Hono()
-.post("/create", zValidator("json", roomSchema), async (c) => {
+  .post("/create", zValidator("json", roomSchema), async (c) => {
     try {
-      const { nbRooms, type, pricePerNight, status, description } = await c.req.valid("json");
+      const {
+        capacity,
+        hasBalcony,
+        pricePerNight,
+        roomNumber,
+        status,
+        type,
+        description,
+        guestHouseId,
+        isActive,
+        images,
+      } = await c.req.valid("json");
 
       // Création de la chambre
       const newRoom = await db.room.create({
-        data: { nbRooms, type, pricePerNight, status, description },
+        data: {
+          capacity,
+          hasBalcony,
+          pricePerNight,
+          roomNumber,
+          status,
+          type,
+          description,
+          guestHouseId: guestHouseId!,
+          isActive,
+          images: {
+            createMany: { data: images?.map((url) => ({ url })) || [] },
+          },
+        },
       });
 
       return c.json(
         {
           success: true,
-          message: "Room added successfully",
+          message: "Room created successfully",
           data: newRoom,
         },
         201
@@ -84,13 +108,7 @@ const app = new Hono()
       const { id } = c.req.param();
 
       if (!(await doesRoomExist(Number(id)))) {
-        return c.json(
-          {
-            success: false,
-            error: "Room not found",
-          },
-          404
-        );
+        return c.json({ success: false, error: "Room not found" }, 404);
       }
 
       const room = await db.room.findUnique({
@@ -103,10 +121,7 @@ const app = new Hono()
       });
     } catch (error) {
       return c.json(
-        {
-          success: false,
-          error: "Error retrieving the room",
-        },
+        { success: false, error: "Error retrieving the room" },
         500
       );
     }
@@ -114,21 +129,39 @@ const app = new Hono()
   .put("/update/:id", zValidator("json", roomSchema), async (c) => {
     try {
       const id = c.req.param("id");
-      const { nbRooms, type, pricePerNight, status, description } = await c.req.valid("json");
+      const {
+        capacity,
+        hasBalcony,
+        pricePerNight,
+        roomNumber,
+        status,
+        type,
+        description,
+        guestHouseId,
+        isActive,
+        images,
+      } = await c.req.valid("json");
 
       if (!(await doesRoomExist(Number(id)))) {
-        return c.json(
-          {
-            success: false,
-            error: "Room not found",
-          },
-          404
-        );
+        return c.json({ success: false, error: "Room not found" }, 404);
       }
 
       const updatedRoom = await db.room.update({
         where: { id: Number(id) },
-        data: { nbRooms, type, pricePerNight, status, description },
+        data: {
+          capacity,
+          hasBalcony,
+          pricePerNight,
+          roomNumber,
+          status,
+          type,
+          description,
+          guestHouseId: guestHouseId!,
+          isActive,
+          images: {
+            createMany: { data: images?.map((url) => ({ url })) || [] },
+          },
+        },
       });
 
       return c.json({
@@ -137,13 +170,7 @@ const app = new Hono()
         data: updatedRoom,
       });
     } catch (error) {
-      return c.json(
-        {
-          success: false,
-          error: "Error updating the room",
-        },
-        500
-      );
+      return c.json({ success: false, error: "Error updating the room" }, 500);
     }
   })
   .delete("/delete/:id", async (c) => {
@@ -151,49 +178,49 @@ const app = new Hono()
       const { id } = c.req.param();
 
       if (!(await doesRoomExist(Number(id)))) {
-        return c.json(
-          {
-            success: false,
-            error: "Room not found",
-          },
-          404
-        );
+        return c.json({ success: false, error: "Room not found" }, 404);
       }
 
       await db.room.delete({ where: { id: Number(id) } });
 
-      return c.json({
-        success: true,
-        message: "Room deleted successfully",
-      });
+      return c.json({ success: true, message: "Room deleted successfully" });
     } catch (error) {
-      return c.json(
-        {
-          success: false,
-          error: "Error deleting the room",
-        },
-        500
-      );
+      return c.json({ success: false, error: "Error deleting the room" }, 500);
     }
   })
   .patch("/patch/:id", zValidator("json", patchRoomSchema), async (c) => {
     const { id } = c.req.param();
 
     if (!(await doesRoomExist(Number(id)))) {
-      return c.json(
-        {
-          success: false,
-          error: "Room not found",
-        },
-        404
-      );
+      return c.json({ success: false, error: "Room not found" }, 404);
     }
 
-    const { nbRooms, type, pricePerNight, status, description } = await c.req.valid("json");
+    const {
+      capacity,
+      hasBalcony,
+      pricePerNight,
+      roomNumber,
+      status,
+      type,
+      description,
+      guestHouseId,
+      isActive,
+      images,
+    } = await c.req.valid("json");
 
     const updatedRoom = await db.room.update({
       where: { id: Number(id) },
-      data: { nbRooms, type, pricePerNight, status, description },
+      data: {
+        capacity,
+        hasBalcony,
+        pricePerNight,
+        roomNumber,
+        status,
+        type,
+        description,
+        guestHouseId: guestHouseId,
+        isActive,
+      },
     });
 
     return c.json({

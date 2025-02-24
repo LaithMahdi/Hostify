@@ -21,29 +21,68 @@ model Equipment {
   id          Int      @id @default(autoincrement())
   name        String
   icon        String
-  description String   @default("")
+  description String?
   isActive    Boolean  @default(true)
+  rooms       Room[]
+
   createdAt   DateTime @default(now())
 }
 
-model Guesthouse {
+model GuestHouse {
   id            Int      @id @default(autoincrement())
   name          String
   address       String
   region        String
-  numberOfRooms Int
-  description   String   @default("")
+  description   String?
   rating        Float?
+  hasParking      Boolean @default(false)
+  isPetFriendly   Boolean @default(false)
+  rooms         Room[] 
+  images        Image[]
+  contacts      Contact[] 
+  
   createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
+
 model Room {
   id             Int       @id @default(autoincrement())
-  nbRooms        Int
+  roomNumber     Int
   type           RoomType
   pricePerNight  Float
   status         RoomStatus
-  description    String    @default("")
-  createdAt      DateTime  @default(now())
+  capacity       Int
+  hasBalcony      Boolean    @default(false)
+  description    String?
+  guestHouseId   Int     
+  images         Image[]
+  equipment      Equipment[]
+  guestHouse     GuestHouse @relation(fields: [guestHouseId], references: [id]) 
+  isActive       Boolean    @default(true)
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Contact {
+  id           Int      @id @default(autoincrement())
+  type         ContactType 
+  value        String   
+  guestHouseId Int    
+  guestHouse   GuestHouse? @relation(fields: [guestHouseId], references: [id]) 
+  createdAt    DateTime @default(now())
+}
+
+model Image {
+  id           Int      @id @default(autoincrement())
+  url          String
+
+  guestHouseId Int?    
+  guestHouse   GuestHouse? @relation(fields: [guestHouseId], references: [id]) 
+  roomId       Int?
+  room         Room? @relation(fields: [roomId], references: [id])
+
+  createdAt    DateTime @default(now())
 }
 
 enum RoomType {
@@ -64,4 +103,12 @@ enum Role {
   USER
   OWNER
   ADMIN
+}
+
+enum ContactType {
+  PHONE
+  FACEBOOK
+  INSTAGRAM
+  EMAIL
+  WEBSITE
 }
