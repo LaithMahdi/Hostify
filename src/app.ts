@@ -6,8 +6,8 @@ import { timing } from "hono/timing";
 import { env } from "@/dotenv_config";
 import authRoutes from "@/controller/auth.controller";
 import equipementRoutes from "@/controller/equipment/equipment.controller";
-import guesthouseRoutes from "@/controller/Guesthouse/guesthouge.controller";
-import roomRoutes from "@/controller/Room/room.controller";
+import guesthouseRoutes from "@/controller/guest-house/guest.house.controller";
+import roomRoutes from "@/controller/room/room.controller";
 const app = new Hono()
   .basePath("/api/v1")
   // Middlewares
