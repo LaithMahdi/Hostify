@@ -77,6 +77,8 @@ const app = new Hono()
       const limit = Number(c.req.query("limit") || 10);
       const search = c.req.query("search") || "";
       const country = c.req.query("country") || "";
+      const hasParking = c.req.query("hasParking");
+      const isPetFriendly = c.req.query("isPetFriendly");
       const skip = (page - 1) * limit;
 
       const filters: any = {
@@ -89,6 +91,12 @@ const app = new Hono()
           mode: "insensitive",
         },
       };
+
+      if (hasParking === "true") filters.hasParking = true;
+      else if (hasParking === "false") filters.hasParking = false;
+
+      if (isPetFriendly === "true") filters.isPetFriendly = true;
+      else if (isPetFriendly === "false") filters.isPetFriendly = false;
 
       const [totalItems, guesthouses] = await Promise.all([
         db.guestHouse.count({ where: filters }),
