@@ -34,7 +34,7 @@ model GuestHouse {
   address       String
   region        String
   description   String?
-  rating        Float?
+  rating        Float   @default(0)
   hasParking      Boolean @default(false)
   isPetFriendly   Boolean @default(false)
   rooms         Room[] 

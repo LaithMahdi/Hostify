@@ -60,7 +60,6 @@ export const guestHouseSchema = z.object({
     .string()
     .min(3, { message: "Region must be at least 3 characters long." }),
   description: z.string().optional(),
-  rating: z.number().optional(),
   hasParking: z.boolean().default(false),
   isPetFriendly: z.boolean().default(false),
   contacts: z.array(

@@ -4,6 +4,8 @@ import { zValidator } from "@hono/zod-validator";
 import { guestHouseSchema, patchGuestHouseSchema } from "@/schemas";
 import { authMiddleware } from "@/middleware/auth_middleware";
 import { doesGuestHouseExist } from "./guest.house.service";
+import { roleMiddleware } from "@/middleware/role_middleware";
+import { Role } from "@prisma/client";
 
 const app = new Hono()
   // Création d'une guesthouse
@@ -11,7 +13,7 @@ const app = new Hono()
     "/create",
     zValidator("json", guestHouseSchema),
     authMiddleware,
-    // roleMiddleware([Role.ADMIN,Role.OWNER]),
+    roleMiddleware([Role.ADMIN, Role.OWNER]),
 
     async (c) => {
       try {
@@ -23,7 +25,6 @@ const app = new Hono()
           hasParking,
           isPetFriendly,
           region,
-          rating,
           rooms,
           images,
         } = await c.req.valid("json");
@@ -43,7 +44,7 @@ const app = new Hono()
             hasParking,
             isPetFriendly,
             region,
-            rating,
+
             rooms: {
               connect: roomIds.map((room) => ({ id: room.id })),
             },
@@ -160,7 +161,6 @@ const app = new Hono()
         hasParking,
         isPetFriendly,
         region,
-        rating,
         rooms,
         images,
       } = await c.req.valid("json");
@@ -185,7 +185,6 @@ const app = new Hono()
           hasParking,
           isPetFriendly,
           region,
-          rating,
           rooms: {
             connect: roomIds.map((room) => ({ id: room.id })),
           },
@@ -248,7 +247,6 @@ const app = new Hono()
         hasParking,
         isPetFriendly,
         region,
-        rating,
         rooms,
         images,
       } = await c.req.valid("json");
@@ -269,7 +267,6 @@ const app = new Hono()
           hasParking,
           isPetFriendly,
           region,
-          rating,
           rooms: {
             connect: roomIds.map((room) => ({ id: room.id })),
           },
