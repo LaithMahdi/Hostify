@@ -137,19 +137,18 @@ const app = new Hono()
       );
     }
   })
-  .get("/created-by", authMiddleware, async (c) => {
+  .get("/my/", authMiddleware, async (c) => {
     try {
       const user = c.get("user");
       const rooms = await db.room.findMany({
-        where: {
-          ownerId: user.id,
-        },
+        where: { ownerId: user.id },
       });
       return c.json({
         success: true,
         data: rooms,
       });
     } catch (error) {
+      console.log(error);
       return c.json(
         {
           success: false,
