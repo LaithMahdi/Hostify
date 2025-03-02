@@ -16,6 +16,7 @@ const app = new Hono()
     roleMiddleware([Role.ADMIN, Role.OWNER]),
 
     async (c) => {
+      const user = c.get("user");
       try {
         const {
           name,
@@ -51,6 +52,7 @@ const app = new Hono()
             images: {
               createMany: { data: images?.map((url) => ({ url })) || [] },
             },
+            ownerId: user.id,
           },
         });
 

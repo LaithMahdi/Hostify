@@ -1,8 +1,11 @@
 import { db } from "@/lib/prisma";
 import { ContactType, RoomStatus, RoomType } from "@prisma/client";
+import { seedUsers } from "./seed.user";
 
 export const seedData = async () => {
   try {
+    const usersWithIds = await seedUsers();
+
     // Check if Guest Houses already exist
     const guestHouseCount = await db.guestHouse.count();
     if (guestHouseCount > 0) {
@@ -19,6 +22,7 @@ export const seedData = async () => {
           rating: 4.8,
           hasParking: true,
           isPetFriendly: false,
+          ownerId: usersWithIds[1].id,
         },
         {
           name: "Villa Didon",
@@ -29,6 +33,7 @@ export const seedData = async () => {
           rating: 4.7,
           hasParking: true,
           isPetFriendly: true,
+          ownerId: usersWithIds[1].id,
         },
         {
           name: "Maison Dedine",
@@ -39,6 +44,7 @@ export const seedData = async () => {
           rating: 4.9,
           hasParking: false,
           isPetFriendly: true,
+          ownerId: usersWithIds[3].id,
         },
         {
           name: "Dar Ben Gacem",
@@ -49,6 +55,7 @@ export const seedData = async () => {
           rating: 4.6,
           hasParking: false,
           isPetFriendly: false,
+          ownerId: usersWithIds[3].id,
         },
         {
           name: "La Chambre Bleue",
@@ -59,6 +66,7 @@ export const seedData = async () => {
           rating: 4.7,
           hasParking: false,
           isPetFriendly: true,
+          ownerId: usersWithIds[3].id,
         },
         {
           name: "Dar Said",
@@ -69,6 +77,7 @@ export const seedData = async () => {
           rating: 4.8,
           hasParking: true,
           isPetFriendly: false,
+          ownerId: usersWithIds[9].id,
         },
         {
           name: "Dar Antonia",
@@ -79,6 +88,7 @@ export const seedData = async () => {
           rating: 4.9,
           hasParking: true,
           isPetFriendly: true,
+          ownerId: usersWithIds[9].id,
         },
         {
           name: "Dar Sabri",
@@ -89,6 +99,7 @@ export const seedData = async () => {
           rating: 4.7,
           hasParking: false,
           isPetFriendly: false,
+          ownerId: usersWithIds[9].id,
         },
         {
           name: "Dar Kenza",
@@ -99,6 +110,7 @@ export const seedData = async () => {
           rating: 4.6,
           hasParking: false,
           isPetFriendly: true,
+          ownerId: usersWithIds[11].id,
         },
         {
           name: "Dar Bibine",
@@ -109,6 +121,7 @@ export const seedData = async () => {
           rating: 4.8,
           hasParking: true,
           isPetFriendly: false,
+          ownerId: usersWithIds[11].id,
         },
         {
           name: "Dar El Marsa",
@@ -119,6 +132,7 @@ export const seedData = async () => {
           rating: 4.5,
           hasParking: true,
           isPetFriendly: true,
+          ownerId: usersWithIds[11].id,
         },
         {
           name: "Dar El Hana",
@@ -128,7 +142,9 @@ export const seedData = async () => {
             "A peaceful retreat surrounded by lush gardens and close to the beach.",
           rating: 4.7,
           hasParking: true,
+
           isPetFriendly: false,
+          ownerId: usersWithIds[13].id,
         },
         {
           name: "Dar El Andalous",
@@ -139,6 +155,7 @@ export const seedData = async () => {
           rating: 4.6,
           hasParking: false,
           isPetFriendly: true,
+          ownerId: usersWithIds[13].id,
         },
         {
           name: "Dar El Ghazal",
@@ -149,6 +166,7 @@ export const seedData = async () => {
           rating: 4.8,
           hasParking: true,
           isPetFriendly: true,
+          ownerId: usersWithIds[15].id,
         },
         {
           name: "Dar El Bahri",
@@ -159,6 +177,7 @@ export const seedData = async () => {
           rating: 4.7,
           hasParking: true,
           isPetFriendly: false,
+          ownerId: usersWithIds[15].id,
         },
         {
           name: "Dar El Fell",
@@ -169,6 +188,7 @@ export const seedData = async () => {
           rating: 4.6,
           hasParking: false,
           isPetFriendly: false,
+          ownerId: usersWithIds[15].id,
         },
         {
           name: "Dar El Rih",
@@ -179,6 +199,7 @@ export const seedData = async () => {
           rating: 4.9,
           hasParking: true,
           isPetFriendly: true,
+          ownerId: usersWithIds[17].id,
         },
         {
           name: "Dar El Safi",
@@ -189,6 +210,7 @@ export const seedData = async () => {
           rating: 4.7,
           hasParking: true,
           isPetFriendly: false,
+          ownerId: usersWithIds[17].id,
         },
         {
           name: "Dar El Nour",
@@ -199,6 +221,7 @@ export const seedData = async () => {
           rating: 4.6,
           hasParking: false,
           isPetFriendly: true,
+          ownerId: usersWithIds[17].id,
         },
         {
           name: "Dar El Yasmine",
@@ -209,6 +232,7 @@ export const seedData = async () => {
           rating: 4.8,
           hasParking: true,
           isPetFriendly: false,
+          ownerId: usersWithIds[19].id,
         },
         {
           name: "Dar El Sahel",
@@ -219,6 +243,7 @@ export const seedData = async () => {
           rating: 4.5,
           hasParking: true,
           isPetFriendly: true,
+          ownerId: usersWithIds[19].id,
         },
         {
           name: "Dar El Atlas",
@@ -229,6 +254,7 @@ export const seedData = async () => {
           rating: 4.7,
           hasParking: false,
           isPetFriendly: false,
+          ownerId: usersWithIds[19].id,
         },
         {
           name: "Dar El Khayam",
@@ -239,6 +265,7 @@ export const seedData = async () => {
           rating: 4.6,
           hasParking: true,
           isPetFriendly: true,
+          ownerId: usersWithIds[21].id,
         },
         {
           name: "Dar El Misk",
@@ -249,6 +276,7 @@ export const seedData = async () => {
           rating: 4.5,
           hasParking: false,
           isPetFriendly: false,
+          ownerId: usersWithIds[21].id,
         },
         {
           name: "Dar El Warda",
@@ -259,6 +287,7 @@ export const seedData = async () => {
           rating: 4.7,
           hasParking: true,
           isPetFriendly: true,
+          ownerId: usersWithIds[21].id,
         },
         {
           name: "Dar El Sahab",
@@ -269,6 +298,7 @@ export const seedData = async () => {
           rating: 4.6,
           hasParking: true,
           isPetFriendly: false,
+          ownerId: usersWithIds[23].id,
         },
         {
           name: "Dar El Baraka",
@@ -279,6 +309,7 @@ export const seedData = async () => {
           rating: 4.8,
           hasParking: false,
           isPetFriendly: true,
+          ownerId: usersWithIds[23].id,
         },
         {
           name: "Dar El Amal",
@@ -289,6 +320,7 @@ export const seedData = async () => {
           rating: 4.7,
           hasParking: true,
           isPetFriendly: false,
+          ownerId: usersWithIds[23].id,
         },
         {
           name: "Dar El Hayet",
@@ -299,6 +331,7 @@ export const seedData = async () => {
           rating: 4.9,
           hasParking: true,
           isPetFriendly: true,
+          ownerId: usersWithIds[25].id,
         },
         {
           name: "Dar El Samra",
@@ -309,6 +342,7 @@ export const seedData = async () => {
           rating: 4.8,
           hasParking: false,
           isPetFriendly: false,
+          ownerId: usersWithIds[25].id,
         },
         {
           name: "Dar El Noujoum",
@@ -319,6 +353,7 @@ export const seedData = async () => {
           rating: 4.7,
           hasParking: true,
           isPetFriendly: true,
+          ownerId: usersWithIds[25].id,
         },
         {
           name: "Dar El Safir",
@@ -329,6 +364,7 @@ export const seedData = async () => {
           rating: 4.6,
           hasParking: false,
           isPetFriendly: false,
+          ownerId: usersWithIds[27].id,
         },
         {
           name: "Dar El Manara",
@@ -339,6 +375,7 @@ export const seedData = async () => {
           rating: 4.8,
           hasParking: true,
           isPetFriendly: true,
+          ownerId: usersWithIds[27].id,
         },
         {
           name: "Dar El Qamar",
@@ -349,6 +386,7 @@ export const seedData = async () => {
           rating: 4.7,
           hasParking: false,
           isPetFriendly: false,
+          ownerId: usersWithIds[15].id,
         },
         {
           name: "Dar El Shams",
@@ -359,6 +397,7 @@ export const seedData = async () => {
           rating: 4.6,
           hasParking: true,
           isPetFriendly: true,
+          ownerId: usersWithIds[15].id,
         },
         {
           name: "Dar El Layali",
@@ -369,6 +408,7 @@ export const seedData = async () => {
           rating: 4.7,
           hasParking: false,
           isPetFriendly: false,
+          ownerId: usersWithIds[15].id,
         },
         {
           name: "Dar El Sabah",
@@ -379,6 +419,7 @@ export const seedData = async () => {
           rating: 4.8,
           hasParking: true,
           isPetFriendly: true,
+          ownerId: usersWithIds[15].id,
         },
       ];
 
@@ -405,6 +446,7 @@ export const seedData = async () => {
           hasBalcony: true,
           description: "A compact single room with ocean view.",
           guestHouseId: guestHouses[0].id,
+          ownerId: usersWithIds[1].id,
         },
         {
           roomNumber: 102,
@@ -415,6 +457,7 @@ export const seedData = async () => {
           hasBalcony: false,
           description: "Spacious double room with modern decor.",
           guestHouseId: guestHouses[1].id,
+          ownerId: usersWithIds[1].id,
         },
         {
           roomNumber: 103,
@@ -425,6 +468,7 @@ export const seedData = async () => {
           hasBalcony: true,
           description: "Luxury suite with private balcony.",
           guestHouseId: guestHouses[2].id,
+          ownerId: usersWithIds[3].id,
         },
         {
           roomNumber: 104,
@@ -435,6 +479,7 @@ export const seedData = async () => {
           hasBalcony: false,
           description: "Family-friendly room with multiple beds.",
           guestHouseId: guestHouses[3].id,
+          ownerId: usersWithIds[3].id,
         },
         {
           roomNumber: 105,
@@ -445,6 +490,7 @@ export const seedData = async () => {
           hasBalcony: true,
           description: "A small single room with scenic view.",
           guestHouseId: guestHouses[4].id,
+          ownerId: usersWithIds[5].id,
         },
         {
           roomNumber: 106,
@@ -455,6 +501,7 @@ export const seedData = async () => {
           hasBalcony: true,
           description: "Double room with modern amenities.",
           guestHouseId: guestHouses[5].id,
+          ownerId: usersWithIds[5].id,
         },
         {
           roomNumber: 107,
@@ -465,6 +512,7 @@ export const seedData = async () => {
           hasBalcony: true,
           description: "Premium suite with top-notch facilities.",
           guestHouseId: guestHouses[6].id,
+          ownerId: usersWithIds[5].id,
         },
         {
           roomNumber: 108,
@@ -475,6 +523,7 @@ export const seedData = async () => {
           hasBalcony: false,
           description: "Spacious family room with cozy design.",
           guestHouseId: guestHouses[7].id,
+          ownerId: usersWithIds[5].id,
         },
         {
           roomNumber: 109,
@@ -485,6 +534,7 @@ export const seedData = async () => {
           hasBalcony: false,
           description: "Comfortable single room with fast WiFi.",
           guestHouseId: guestHouses[8].id,
+          ownerId: usersWithIds[5].id,
         },
         {
           roomNumber: 110,
@@ -495,6 +545,7 @@ export const seedData = async () => {
           hasBalcony: true,
           description: "Modern double room with city view.",
           guestHouseId: guestHouses[9].id,
+          ownerId: usersWithIds[7].id,
         },
         {
           roomNumber: 201,
@@ -505,6 +556,7 @@ export const seedData = async () => {
           hasBalcony: false,
           description: "Cozy single room with a comfortable workspace.",
           guestHouseId: guestHouses[10].id,
+          ownerId: usersWithIds[7].id,
         },
         {
           roomNumber: 202,
@@ -515,6 +567,7 @@ export const seedData = async () => {
           hasBalcony: true,
           description: "Elegant double room with a private terrace.",
           guestHouseId: guestHouses[11].id,
+          ownerId: usersWithIds[7].id,
         },
         {
           roomNumber: 203,
@@ -525,6 +578,7 @@ export const seedData = async () => {
           hasBalcony: true,
           description: "Exclusive suite with a jacuzzi and sea view.",
           guestHouseId: guestHouses[12].id,
+          ownerId: usersWithIds[7].id,
         },
         {
           roomNumber: 204,
@@ -535,6 +589,7 @@ export const seedData = async () => {
           hasBalcony: false,
           description: "Family room with bunk beds and a play area.",
           guestHouseId: guestHouses[13].id,
+          ownerId: usersWithIds[9].id,
         },
         {
           roomNumber: 205,
@@ -545,6 +600,7 @@ export const seedData = async () => {
           hasBalcony: true,
           description: "Single room with a balcony overlooking the garden.",
           guestHouseId: guestHouses[14].id,
+          ownerId: usersWithIds[11].id,
         },
         {
           roomNumber: 206,
@@ -555,6 +611,7 @@ export const seedData = async () => {
           hasBalcony: false,
           description: "Double room with a cozy fireplace.",
           guestHouseId: guestHouses[15].id,
+          ownerId: usersWithIds[11].id,
         },
         {
           roomNumber: 207,
@@ -565,6 +622,7 @@ export const seedData = async () => {
           hasBalcony: true,
           description: "Luxury suite with a private pool and sun deck.",
           guestHouseId: guestHouses[16].id,
+          ownerId: usersWithIds[15].id,
         },
         {
           roomNumber: 208,
@@ -575,6 +633,7 @@ export const seedData = async () => {
           hasBalcony: false,
           description: "Family room with a kitchenette and dining area.",
           guestHouseId: guestHouses[17].id,
+          ownerId: usersWithIds[15].id,
         },
         {
           roomNumber: 209,
@@ -585,6 +644,7 @@ export const seedData = async () => {
           hasBalcony: false,
           description: "Single room with a minimalist design and city view.",
           guestHouseId: guestHouses[18].id,
+          ownerId: usersWithIds[17].id,
         },
         {
           roomNumber: 210,
@@ -595,6 +655,7 @@ export const seedData = async () => {
           hasBalcony: true,
           description: "Double room with a private balcony and mountain view.",
           guestHouseId: guestHouses[19].id,
+          ownerId: usersWithIds[17].id,
         },
         {
           roomNumber: 301,
@@ -605,6 +666,7 @@ export const seedData = async () => {
           hasBalcony: false,
           description: "Affordable single room with all basic amenities.",
           guestHouseId: guestHouses[20].id,
+          ownerId: usersWithIds[21].id,
         },
         {
           roomNumber: 302,
@@ -615,6 +677,7 @@ export const seedData = async () => {
           hasBalcony: true,
           description: "Double room with a balcony and garden view.",
           guestHouseId: guestHouses[21].id,
+          ownerId: usersWithIds[21].id,
         },
         {
           roomNumber: 303,
@@ -625,6 +688,7 @@ export const seedData = async () => {
           hasBalcony: true,
           description: "Suite with a private lounge and panoramic views.",
           guestHouseId: guestHouses[22].id,
+          ownerId: usersWithIds[21].id,
         },
         {
           roomNumber: 304,
@@ -635,6 +699,7 @@ export const seedData = async () => {
           hasBalcony: false,
           description: "Family room with a spacious layout and modern decor.",
           guestHouseId: guestHouses[23].id,
+          ownerId: usersWithIds[23].id,
         },
         {
           roomNumber: 305,
@@ -645,6 +710,7 @@ export const seedData = async () => {
           hasBalcony: true,
           description: "Single room with a balcony and sea breeze.",
           guestHouseId: guestHouses[24].id,
+          ownerId: usersWithIds[23].id,
         },
         {
           roomNumber: 306,
@@ -655,6 +721,7 @@ export const seedData = async () => {
           hasBalcony: false,
           description: "Double room with a cozy reading nook.",
           guestHouseId: guestHouses[25].id,
+          ownerId: usersWithIds[23].id,
         },
         {
           roomNumber: 307,
@@ -665,6 +732,7 @@ export const seedData = async () => {
           hasBalcony: true,
           description: "Suite with a private terrace and outdoor seating.",
           guestHouseId: guestHouses[26].id,
+          ownerId: usersWithIds[25].id,
         },
         {
           roomNumber: 308,
@@ -675,6 +743,7 @@ export const seedData = async () => {
           hasBalcony: false,
           description: "Family room with a kids' play corner and TV.",
           guestHouseId: guestHouses[27].id,
+          ownerId: usersWithIds[25].id,
         },
         {
           roomNumber: 309,
@@ -685,6 +754,7 @@ export const seedData = async () => {
           hasBalcony: false,
           description: "Single room with a modern design and fast WiFi.",
           guestHouseId: guestHouses[28].id,
+          ownerId: usersWithIds[27].id,
         },
         {
           roomNumber: 310,
@@ -695,6 +765,7 @@ export const seedData = async () => {
           hasBalcony: true,
           description: "Double room with a private balcony and sunset views.",
           guestHouseId: guestHouses[29].id,
+          ownerId: usersWithIds[27].id,
         },
       ];
 
