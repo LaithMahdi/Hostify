@@ -3,26 +3,20 @@ import { db } from "@/lib/prisma";
 import { zValidator } from "@hono/zod-validator";
 import { roomSchema, patchRoomSchema } from "@/schemas";
 import { doesRoomExist } from "@/controller/room/room.service";
+import { authMiddleware } from "@/middleware/auth_middleware";
+import { roleMiddleware } from "@/middleware/role_middleware";
+import { Role } from "@prisma/client";
 
 const app = new Hono()
-  .post("/create", zValidator("json", roomSchema), async (c) => {
-    try {
-      const {
-        capacity,
-        hasBalcony,
-        pricePerNight,
-        roomNumber,
-        status,
-        type,
-        description,
-        guestHouseId,
-        isActive,
-        images,
-      } = await c.req.valid("json");
-
-      // Création de la chambre
-      const newRoom = await db.room.create({
-        data: {
+  .post(
+    "/create",
+    zValidator("json", roomSchema),
+    authMiddleware,
+    roleMiddleware([Role.ADMIN, Role.OWNER]),
+    async (c) => {
+      try {
+        const user = c.get("user");
+        const {
           capacity,
           hasBalcony,
           pricePerNight,
@@ -30,32 +24,49 @@ const app = new Hono()
           status,
           type,
           description,
-          guestHouseId: guestHouseId!,
+          guestHouseId,
           isActive,
-          images: {
-            createMany: { data: images?.map((url) => ({ url })) || [] },
-          },
-        },
-      });
+          images,
+        } = await c.req.valid("json");
 
-      return c.json(
-        {
-          success: true,
-          message: "Room created successfully",
-          data: newRoom,
-        },
-        201
-      );
-    } catch (error) {
-      return c.json(
-        {
-          success: false,
-          error: "Error adding the room",
-        },
-        500
-      );
+        // Création de la chambre
+        const newRoom = await db.room.create({
+          data: {
+            capacity,
+            hasBalcony,
+            pricePerNight,
+            roomNumber,
+            status,
+            type,
+            description,
+            guestHouseId: guestHouseId!,
+            isActive,
+            images: {
+              createMany: { data: images?.map((url) => ({ url })) || [] },
+            },
+            ownerId: user.id,
+          },
+        });
+
+        return c.json(
+          {
+            success: true,
+            message: "Room created successfully",
+            data: newRoom,
+          },
+          201
+        );
+      } catch (error) {
+        return c.json(
+          {
+            success: false,
+            error: "Error adding the room",
+          },
+          500
+        );
+      }
     }
-  })
+  )
   .get("/all", async (c) => {
     try {
       const page = Number(c.req.query("page") || 1);
@@ -122,6 +133,28 @@ const app = new Hono()
     } catch (error) {
       return c.json(
         { success: false, error: "Error retrieving the room" },
+        500
+      );
+    }
+  })
+  .get("/created-by", authMiddleware, async (c) => {
+    try {
+      const user = c.get("user");
+      const rooms = await db.room.findMany({
+        where: {
+          ownerId: user.id,
+        },
+      });
+      return c.json({
+        success: true,
+        data: rooms,
+      });
+    } catch (error) {
+      return c.json(
+        {
+          success: false,
+          error: "Error retrieving the rooms",
+        },
         500
       );
     }
