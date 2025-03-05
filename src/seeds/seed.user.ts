@@ -12,31 +12,36 @@ export async function seedUsers() {
     } else {
       const users = await Promise.all(
         Array.from({ length: 50 }, async (_, i) => {
+          const id = faker.string.uuid();
           const fullName = faker.person.fullName();
           const email = faker.internet.email({
             firstName: fullName.split(" ")[0],
           });
 
-          // Generate a random password using faker
-          const password = faker.internet.password();
-
           return {
+            id,
             fullName,
             email,
-            password: await argon2.hash("123456789"), // Hash the password
+            password: await argon2.hash("123456789"),
             role: i % 2 === 0 ? Role.USER : Role.OWNER,
           };
         })
       );
 
-      // Insert the users into the database
       await db.user.createMany({
         data: users,
       });
 
       console.log("✅ 50 Users seeded successfully!");
     }
+
+    const usersWithIds = await db.user.findMany({
+      select: { id: true, email: true },
+    });
+
+    return usersWithIds;
   } catch (error) {
     console.error("❌ Error in seeding:", error);
+    return [];
   }
 }

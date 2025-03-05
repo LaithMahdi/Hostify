@@ -4,6 +4,8 @@ import { zValidator } from "@hono/zod-validator";
 import { guestHouseSchema, patchGuestHouseSchema } from "@/schemas";
 import { authMiddleware } from "@/middleware/auth_middleware";
 import { doesGuestHouseExist } from "./guest.house.service";
+import { roleMiddleware } from "@/middleware/role_middleware";
+import { Role } from "@prisma/client";
 
 const app = new Hono()
   // Création d'une guesthouse
@@ -11,9 +13,10 @@ const app = new Hono()
     "/create",
     zValidator("json", guestHouseSchema),
     authMiddleware,
-    // roleMiddleware([Role.ADMIN,Role.OWNER]),
+    roleMiddleware([Role.ADMIN, Role.OWNER]),
 
     async (c) => {
+      const user = c.get("user");
       try {
         const {
           name,
@@ -23,7 +26,6 @@ const app = new Hono()
           hasParking,
           isPetFriendly,
           region,
-          rating,
           rooms,
           images,
         } = await c.req.valid("json");
@@ -43,13 +45,14 @@ const app = new Hono()
             hasParking,
             isPetFriendly,
             region,
-            rating,
+
             rooms: {
               connect: roomIds.map((room) => ({ id: room.id })),
             },
             images: {
               createMany: { data: images?.map((url) => ({ url })) || [] },
             },
+            ownerId: user.id,
           },
         });
 
@@ -77,6 +80,8 @@ const app = new Hono()
       const limit = Number(c.req.query("limit") || 10);
       const search = c.req.query("search") || "";
       const country = c.req.query("country") || "";
+      const hasParking = c.req.query("hasParking");
+      const isPetFriendly = c.req.query("isPetFriendly");
       const skip = (page - 1) * limit;
 
       const filters: any = {
@@ -89,6 +94,12 @@ const app = new Hono()
           mode: "insensitive",
         },
       };
+
+      if (hasParking === "true") filters.hasParking = true;
+      else if (hasParking === "false") filters.hasParking = false;
+
+      if (isPetFriendly === "true") filters.isPetFriendly = true;
+      else if (isPetFriendly === "false") filters.isPetFriendly = false;
 
       const [totalItems, guesthouses] = await Promise.all([
         db.guestHouse.count({ where: filters }),
@@ -152,7 +163,6 @@ const app = new Hono()
         hasParking,
         isPetFriendly,
         region,
-        rating,
         rooms,
         images,
       } = await c.req.valid("json");
@@ -177,7 +187,6 @@ const app = new Hono()
           hasParking,
           isPetFriendly,
           region,
-          rating,
           rooms: {
             connect: roomIds.map((room) => ({ id: room.id })),
           },
@@ -240,7 +249,6 @@ const app = new Hono()
         hasParking,
         isPetFriendly,
         region,
-        rating,
         rooms,
         images,
       } = await c.req.valid("json");
@@ -261,7 +269,6 @@ const app = new Hono()
           hasParking,
           isPetFriendly,
           region,
-          rating,
           rooms: {
             connect: roomIds.map((room) => ({ id: room.id })),
           },
