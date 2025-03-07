@@ -60,7 +60,7 @@ model Room {
   capacity       Int
   hasBalcony      Boolean    @default(false)
   description    String?
-  guestHouseId   Int     
+  guestHouseId   Int?     
   images         Image[]
   equipment      Equipment[]
   guestHouse  GuestHouse? @relation(fields: [guestHouseId], references: [id], onDelete: Cascade)
