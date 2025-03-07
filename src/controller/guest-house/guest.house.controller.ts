@@ -107,7 +107,7 @@ const app = new Hono()
           skip,
           take: limit,
           where: filters,
-          orderBy: { id: "asc" },
+          orderBy: { id: "desc" },
           include: { rooms: true, images: true },
         }),
       ]);
@@ -140,9 +140,38 @@ const app = new Hono()
 
       const guesthouse = await db.guestHouse.findUnique({
         where: { id: Number(id) },
+        include: {
+          rooms: true,
+          images: true,
+          contacts: true,
+        },
       });
 
-      return c.json({ success: true, data: guesthouse });
+      const formattedGuestHouse = {
+        id: guesthouse?.id,
+        name: guesthouse?.name,
+        address: guesthouse?.address,
+        region: guesthouse?.region,
+        description: guesthouse?.description,
+        hasParking: guesthouse?.hasParking,
+        isPetFriendly: guesthouse?.isPetFriendly,
+        rooms: guesthouse?.rooms.map((room) => ({
+          id: room.id,
+          roomNumber: room.roomNumber,
+          capacity: room.capacity,
+        })),
+        images: guesthouse?.images.map((image) => ({
+          id: image.id,
+          url: image.url,
+        })),
+        contacts: guesthouse?.contacts.map((contact) => ({
+          id: contact.id,
+          type: contact.type,
+          value: contact.value,
+        })),
+      };
+
+      return c.json({ success: true, data: formattedGuestHouse });
     } catch (error) {
       return c.json(
         { success: false, error: "Error retrieving guest house" },
