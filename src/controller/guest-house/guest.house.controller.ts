@@ -199,11 +199,6 @@ const app = new Hono()
         images,
       } = await c.req.valid("json");
 
-      console.log("region", region);
-      console.log("rooms", rooms);
-      console.log("images", images);
-      console.log("contacts", contacts);
-
       await db.contact.deleteMany({ where: { guestHouseId: id } });
 
       await db.image.deleteMany({ where: { guestHouseId: id } });
@@ -258,10 +253,13 @@ const app = new Hono()
       });
       await db.guestHouse.delete({ where: { id: Number(id) } });
 
-      return c.json({
-        success: true,
-        message: "Guest house deleted successfully",
-      });
+      return c.json(
+        {
+          success: true,
+          message: "Guest house deleted successfully",
+        },
+        200
+      );
     } catch (error) {
       return c.json(
         { success: false, error: "Error deleting the guest house" },
