@@ -180,10 +180,13 @@ const app = new Hono()
     }
   })
 
-  // Mise à jour complète d'une guesthouse
   .put("/update/:id", zValidator("json", guestHouseSchema), async (c) => {
     try {
-      const id = c.req.param("id");
+      const id = Number(c.req.param("id"));
+      if (isNaN(id)) {
+        return c.json({ success: false, error: "Invalid guest house ID" }, 400);
+      }
+
       const {
         name,
         description,
@@ -196,48 +199,131 @@ const app = new Hono()
         images,
       } = await c.req.valid("json");
 
-      if (!(await doesGuestHouseExist(Number(id)))) {
+      // Check if guest house exists
+      if (!(await doesGuestHouseExist(id))) {
         return c.json({ success: false, error: "Guest house not found" }, 404);
       }
 
-      const roomIds = await db.room.findMany({
-        where: { id: { in: rooms } },
+      // Get current room associations
+      const existingGuestHouse = await db.guestHouse.findUnique({
+        where: { id },
+        select: { rooms: { select: { id: true } } },
       });
 
-      const updatedGuesthouse = await db.guestHouse.update({
-        where: { id: Number(id) },
-        data: {
-          name,
-          description,
-          address,
-          contacts: {
-            createMany: { data: contacts },
+      const existingRoomIds = existingGuestHouse?.rooms.map((r) => r.id) || [];
+
+      // Create a transaction to ensure all operations succeed or fail together
+      const result = await db.$transaction(async (tx) => {
+        // 1. Update the guest house basic information
+        const updatedGuesthouse = await tx.guestHouse.update({
+          where: { id },
+          data: {
+            name,
+            description,
+            address,
+            hasParking,
+            isPetFriendly,
+            region,
+            contacts: {
+              deleteMany: {}, // Remove all existing contacts
+              createMany: { data: contacts ?? [] },
+            },
+            images: {
+              deleteMany: {}, // Remove all old images
+              createMany: { data: (images ?? []).map((url) => ({ url })) },
+            },
           },
-          hasParking,
-          isPetFriendly,
-          region,
-          rooms: {
-            connect: roomIds.map((room) => ({ id: room.id })),
+        });
+
+        // 2. Handle room associations if provided
+        if (rooms && Array.isArray(rooms)) {
+          // Rooms to remove from this guest house
+          const roomsToRemove = existingRoomIds.filter(
+            (roomId) => !rooms.includes(roomId)
+          );
+          if (roomsToRemove.length > 0) {
+            // Instead of trying to set guestHouseId to null, just mark as inactive
+            await tx.room.updateMany({
+              where: {
+                id: { in: roomsToRemove },
+                guestHouseId: id,
+              },
+              data: {
+                isActive: false,
+              },
+            });
+          }
+
+          // Rooms to add to this guest house
+          const roomsToAdd = rooms.filter(
+            (roomId) => !existingRoomIds.includes(roomId)
+          );
+          if (roomsToAdd.length > 0) {
+            // Find rooms that can be added to this guest house
+            const availableRooms = await tx.room.findMany({
+              where: {
+                id: { in: roomsToAdd },
+                isActive: false, // Only consider inactive rooms
+              },
+              select: { id: true },
+            });
+
+            const availableRoomIds = availableRooms.map((r) => r.id);
+
+            if (availableRoomIds.length > 0) {
+              // Update the available rooms to be associated with this guest house
+              await tx.room.updateMany({
+                where: { id: { in: availableRoomIds } },
+                data: {
+                  guestHouseId: id,
+                  isActive: true,
+                },
+              });
+            }
+
+            // Check if any requested rooms were unavailable
+            const unavailableRooms = roomsToAdd.filter(
+              (id) => !availableRoomIds.includes(id)
+            );
+            if (unavailableRooms.length > 0) {
+              console.warn(
+                `Some rooms could not be added to guest house: ${unavailableRooms.join(
+                  ", "
+                )}`
+              );
+            }
+          }
+        }
+
+        // 3. Get the final updated guest house with all its associations
+        const finalGuestHouse = await tx.guestHouse.findUnique({
+          where: { id },
+          include: {
+            rooms: {
+              where: { isActive: true }, // Only include active rooms
+              orderBy: { roomNumber: "asc" },
+            },
+            contacts: true,
+            images: true,
           },
-          images: {
-            createMany: { data: images?.map((url) => ({ url })) || [] },
-          },
-        },
+        });
+
+        return finalGuestHouse;
       });
 
       return c.json({
         success: true,
         message: "Guest house updated successfully",
-        data: updatedGuesthouse,
+        data: result,
       });
     } catch (error) {
+      console.error("Error updating guest house:", error);
       return c.json(
         { success: false, error: "Error updating the guest house" },
         500
       );
     }
   })
-
   // Suppression d'une guesthouse
   .delete("/delete/:id", async (c) => {
     try {

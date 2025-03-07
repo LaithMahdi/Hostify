@@ -63,7 +63,7 @@ model Room {
   guestHouseId   Int     
   images         Image[]
   equipment      Equipment[]
-  guestHouse     GuestHouse @relation(fields: [guestHouseId], references: [id]) 
+  guestHouse  GuestHouse? @relation(fields: [guestHouseId], references: [id], onDelete: Cascade)
   isActive       Boolean    @default(true)
 
   owner          User       @relation(fields: [ownerId], references: [id])
