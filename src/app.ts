@@ -29,7 +29,6 @@ const app = new Hono()
   .route("/equipment", equipementRoutes)
   .route("/guest-house", guesthouseRoutes)
   .route("/room", roomRoutes);
-
 app.get(
   "/openapi",
   openAPISpecs(app, {
@@ -37,8 +36,27 @@ app.get(
       info: {
         title: "Hostify API Documentation",
         version: "1.0.0",
-        description:
-          "Hositify is a comprehensive web application designed to streamline the management of maison d'hôte (guest houses) in Tunisia. This platform offers an all-in-one solution for property owners, managers, and guests to manage bookings, reservations, and other property-related tasks.",
+        description: `
+        ## About Hostify  
+        Hostify is a powerful platform designed to streamline the management of guest houses in Tunisia. It provides a seamless experience for property owners, managers, and guests to handle bookings, reservations, and administrative tasks efficiently.
+
+        ## Authentication  
+        - Users must authenticate using the **/auth/login** endpoint.  
+        - A **JWT token** is provided upon successful login.  
+        - The token should be stored in cookies and sent with every request for authentication.  
+
+        ## Base URL  
+        All API requests should be prefixed with the base URL:  
+        **\`http://localhost:3005/api/v1\`**  
+
+        ## Key Features  
+        - Secure authentication with JWT & cookies  
+        - Full management of guest houses, rooms, and equipment  
+        - Real-time data synchronization  
+        - Robust API security with CORS & secure headers  
+
+        **For more details, visit the API documentation below.**
+        `,
         contact: {
           name: "Hostify Team",
           email: "Mahdilaith380@gmail.com",
@@ -49,7 +67,26 @@ app.get(
           url: "https://opensource.org/licenses/MIT",
         },
       },
-      servers: [{ url: "http://localhost:3005/", description: "Local Server" }],
+      servers: [
+        { url: "http://localhost:3005/", description: "Local Server" },
+        { url: "https://api.hostify.com/", description: "Production Server" },
+      ],
+      security: [
+        {
+          bearerAuth: [],
+        },
+      ],
+      components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: "http",
+            scheme: "bearer",
+            bearerFormat: "JWT",
+            description:
+              "JWT Token is required for authentication. After logging in, include the token in the 'Authorization' header or in cookies.",
+          },
+        },
+      },
     },
   })
 );
