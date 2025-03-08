@@ -5,7 +5,7 @@ import { cors } from "hono/cors";
 import { prettyJSON } from "hono/pretty-json";
 import { secureHeaders } from "hono/secure-headers";
 import { timing } from "hono/timing";
-import authRoutes from "@/controller/auth.controller";
+import authRoutes from "@/controller/auth/auth.controller";
 import equipementRoutes from "@/controller/equipment/equipment.controller";
 import guesthouseRoutes from "@/controller/guest-house/guest.house.controller";
 import roomRoutes from "@/controller/room/room.controller";
