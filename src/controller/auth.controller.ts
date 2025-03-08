@@ -8,6 +8,7 @@ import { env } from "@/dotenv_config";
 import { setCookie } from "hono/cookie";
 import { sign } from "hono/jwt";
 import { describeRoute } from "hono-openapi";
+
 import { z } from "zod";
 
 const app = new Hono()
@@ -25,6 +26,7 @@ const app = new Hono()
           },
         },
       },
+      validateResponse: true,
       responses: {
         201: {
           description: "User registered successfully",

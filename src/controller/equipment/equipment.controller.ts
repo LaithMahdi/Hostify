@@ -11,13 +11,11 @@ import { z } from "zod";
 
 const app = new Hono();
 
-app.get("/openapi");
-
 app.post(
   "/create",
   describeRoute({
     tags: ["Equipment"],
-    description: "Create a new equipment",
+    description: "Create a new equipment item in the database",
     request: {
       body: {
         content: {
@@ -80,7 +78,7 @@ app.get(
   "/all",
   describeRoute({
     tags: ["Equipment"],
-
+    validateResponse: true,
     description: "Get all equipment with pagination and filtering",
     responses: {
       200: {
