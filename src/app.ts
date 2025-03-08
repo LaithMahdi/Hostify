@@ -10,9 +10,7 @@ import equipementRoutes from "@/controller/equipment/equipment.controller";
 import guesthouseRoutes from "@/controller/guest-house/guest.house.controller";
 import roomRoutes from "@/controller/room/room.controller";
 
-const app = new Hono();
-
-app
+const app = new Hono()
   .basePath("/api/v1")
   .use(
     "*",
@@ -61,7 +59,7 @@ app.get(
   apiReference({
     theme: "bluePlanet",
     withDefaultFonts: true,
-    spec: { url: "http://localhost:3005/openapi" },
+    spec: { url: "http://localhost:3005/api/v1/openapi" },
     baseServerURL: "http://localhost:3005/api/v1",
     darkMode: true,
   })

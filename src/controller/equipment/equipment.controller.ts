@@ -7,40 +7,36 @@ import { authMiddleware } from "@/middleware/auth_middleware";
 import { roleMiddleware } from "@/middleware/role_middleware";
 import { Role } from "@prisma/client";
 import { describeRoute } from "hono-openapi";
-import { z } from "zod";
+import { zodToJsonSchema } from "zod-to-json-schema";
 
 const app = new Hono();
+
+const createEquipmentRawSchema = zodToJsonSchema(equipmentSchema, {
+  name: "CreateEquipment",
+});
+
+const CreateEquipmentJsonSchema =
+  createEquipmentRawSchema.definitions?.CreateEquipment || {};
+
+const pathEquipmentRawSchema = zodToJsonSchema(patchEquipmentSchema, {
+  name: "PatchEquipment",
+});
+const patchEquipmentJsonSchema =
+  pathEquipmentRawSchema.definitions?.PatchEquipment || {};
 
 app.post(
   "/create",
   describeRoute({
     tags: ["Equipment"],
+    summary: "Create equipment",
     description: "Create a new equipment item in the database",
-    request: {
-      body: {
-        content: {
-          "application/json": {
-            schema: equipmentSchema,
-          },
-        },
-      },
+    security: [{ cookieAuth: [] }],
+    requestBody: {
+      content: { "application/json": { schema: CreateEquipmentJsonSchema } },
     },
     responses: {
-      201: {
-        description: "Equipment created successfully",
-        content: {
-          "application/json": {
-            schema: z.object({
-              success: z.boolean(),
-              message: z.string(),
-              data: equipmentSchema,
-            }),
-          },
-        },
-      },
-      500: {
-        description: "Internal server error",
-      },
+      201: { description: "Equipment created successfully" },
+      500: { description: "Internal server error" },
     },
   }),
   zValidator("json", equipmentSchema),
@@ -78,28 +74,42 @@ app.get(
   "/all",
   describeRoute({
     tags: ["Equipment"],
-    validateResponse: true,
+    summary: "Get all equipment",
     description: "Get all equipment with pagination and filtering",
+    security: [{ cookieAuth: [] }],
+    parameters: [
+      {
+        name: "page",
+        in: "query",
+        description: "Page number",
+        required: false,
+        schema: { type: "integer" },
+      },
+      {
+        name: "limit",
+        in: "query",
+        description: "Items per page",
+        required: false,
+        schema: { type: "integer" },
+      },
+      {
+        name: "search",
+        in: "query",
+        description: "Search by name",
+        required: false,
+        schema: { type: "string" },
+      },
+      {
+        name: "isActive",
+        in: "query",
+        description: "Filter by active status",
+        required: false,
+        schema: { type: "boolean" },
+      },
+    ],
     responses: {
-      200: {
-        description: "Successful response",
-        content: {
-          "application/json": {
-            schema: z.object({
-              success: z.boolean(),
-              data: z.array(equipmentSchema),
-              totalItems: z.number(),
-              pageInfo: z.object({
-                hasPreviousPage: z.boolean(),
-                hasNextPage: z.boolean(),
-              }),
-            }),
-          },
-        },
-      },
-      500: {
-        description: "Internal server error",
-      },
+      200: { description: "Successful response" },
+      500: { description: "Internal server error" },
     },
   }),
   authMiddleware,
@@ -157,25 +167,13 @@ app.get(
   "/:id",
   describeRoute({
     tags: ["Equipment"],
-    description: "Get equipment by ID",
+    summary: "Get equipment by ID",
+    description: "Get equipment by ID from the database",
+    security: [{ cookieAuth: [] }],
     responses: {
-      200: {
-        description: "Successful response",
-        content: {
-          "application/json": {
-            schema: z.object({
-              success: z.boolean(),
-              data: equipmentSchema,
-            }),
-          },
-        },
-      },
-      404: {
-        description: "Equipment not found",
-      },
-      500: {
-        description: "Internal server error",
-      },
+      200: { description: "Equipment found" },
+      404: { description: "Equipment not found" },
+      500: { description: "Internal server error" },
     },
   }),
   authMiddleware,
@@ -216,36 +214,16 @@ app.put(
   "/update/:id",
   describeRoute({
     tags: ["Equipment"],
-
-    description: "Update equipment by ID",
-    request: {
-      body: {
-        content: {
-          "application/json": {
-            schema: equipmentSchema,
-          },
-        },
-      },
+    summary: "Update equipment by ID",
+    description: "Update equipment by ID in the database",
+    security: [{ cookieAuth: [] }],
+    requestBody: {
+      content: { "application/json": { schema: CreateEquipmentJsonSchema } },
     },
     responses: {
-      200: {
-        description: "Equipment updated successfully",
-        content: {
-          "application/json": {
-            schema: z.object({
-              success: z.boolean(),
-              message: z.string(),
-              data: equipmentSchema,
-            }),
-          },
-        },
-      },
-      404: {
-        description: "Equipment not found",
-      },
-      500: {
-        description: "Internal server error",
-      },
+      200: { description: "Equipment updated successfully" },
+      404: { description: "Equipment not found" },
+      500: { description: "Internal server error" },
     },
   }),
   zValidator("json", equipmentSchema),
@@ -292,26 +270,13 @@ app.delete(
   "/delete/:id",
   describeRoute({
     tags: ["Equipment"],
-
-    description: "Delete equipment by ID",
+    summary: "Delete equipment by ID",
+    description: "Delete equipment by ID from the database",
+    security: [{ cookieAuth: [] }],
     responses: {
-      200: {
-        description: "Equipment deleted successfully",
-        content: {
-          "application/json": {
-            schema: z.object({
-              success: z.boolean(),
-              message: z.string(),
-            }),
-          },
-        },
-      },
-      404: {
-        description: "Equipment not found",
-      },
-      500: {
-        description: "Internal server error",
-      },
+      200: { description: "Equipment deleted successfully" },
+      404: { description: "Equipment not found" },
+      500: { description: "Internal server error" },
     },
   }),
   authMiddleware,
@@ -351,36 +316,16 @@ app.patch(
   "/patch/:id",
   describeRoute({
     tags: ["Equipment"],
-
-    description: "Partially update equipment by ID",
-    request: {
-      body: {
-        content: {
-          "application/json": {
-            schema: patchEquipmentSchema,
-          },
-        },
-      },
+    summary: "Partially update equipment by ID",
+    description: "Partially update equipment by ID in the database",
+    security: [{ cookieAuth: [] }],
+    requestBody: {
+      content: { "application/json": { schema: patchEquipmentJsonSchema } },
     },
     responses: {
-      200: {
-        description: "Equipment updated successfully",
-        content: {
-          "application/json": {
-            schema: z.object({
-              success: z.boolean(),
-              message: z.string(),
-              data: equipmentSchema,
-            }),
-          },
-        },
-      },
-      404: {
-        description: "Equipment not found",
-      },
-      500: {
-        description: "Internal server error",
-      },
+      200: { description: "Equipment updated successfully" },
+      404: { description: "Equipment not found" },
+      500: { description: "Internal server error" },
     },
   }),
   zValidator("json", patchEquipmentSchema),
