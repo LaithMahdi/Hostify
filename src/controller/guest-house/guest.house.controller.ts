@@ -6,75 +6,131 @@ import { authMiddleware } from "@/middleware/auth_middleware";
 import { doesGuestHouseExist } from "./guest.house.service";
 import { roleMiddleware } from "@/middleware/role_middleware";
 import { Role } from "@prisma/client";
+import { describeRoute } from "hono-openapi";
+import { z } from "zod";
 
-const app = new Hono()
-  // Création d'une guesthouse
-  .post(
-    "/create",
-    zValidator("json", guestHouseSchema),
-    authMiddleware,
-    roleMiddleware([Role.ADMIN, Role.OWNER]),
+const app = new Hono();
 
-    async (c) => {
-      const user = c.get("user");
-      try {
-        const {
+app.post(
+  "/create",
+  describeRoute({
+    tags: ["Guest House"],
+    description: "Create a new guest house",
+    request: {
+      body: {
+        content: {
+          "application/json": {
+            schema: guestHouseSchema,
+          },
+        },
+      },
+    },
+    responses: {
+      201: {
+        description: "Guest house created successfully",
+        content: {
+          "application/json": {
+            schema: z.object({
+              success: z.boolean(),
+              message: z.string(),
+              data: guestHouseSchema,
+            }),
+          },
+        },
+      },
+      500: {
+        description: "Internal server error",
+      },
+    },
+  }),
+  zValidator("json", guestHouseSchema),
+  authMiddleware,
+  roleMiddleware([Role.ADMIN, Role.OWNER]),
+  async (c) => {
+    const user = c.get("user");
+    try {
+      const {
+        name,
+        description,
+        address,
+        contacts,
+        hasParking,
+        isPetFriendly,
+        region,
+        rooms,
+        images,
+      } = await c.req.valid("json");
+
+      const roomIds = await db.room.findMany({
+        where: { id: { in: rooms } },
+      });
+
+      const newGuesthouse = await db.guestHouse.create({
+        data: {
           name,
           description,
           address,
-          contacts,
+          contacts: {
+            createMany: { data: contacts },
+          },
           hasParking,
           isPetFriendly,
           region,
-          rooms,
-          images,
-        } = await c.req.valid("json");
-
-        const roomIds = await db.room.findMany({
-          where: { id: { in: rooms } },
-        });
-
-        const newGuesthouse = await db.guestHouse.create({
-          data: {
-            name,
-            description,
-            address,
-            contacts: {
-              createMany: { data: contacts },
-            },
-            hasParking,
-            isPetFriendly,
-            region,
-
-            rooms: {
-              connect: roomIds.map((room) => ({ id: room.id })),
-            },
-            images: {
-              createMany: { data: images?.map((url) => ({ url })) || [] },
-            },
-            ownerId: user.id,
+          rooms: {
+            connect: roomIds.map((room) => ({ id: room.id })),
           },
-        });
-
-        return c.json(
-          {
-            success: true,
-            message: "Guest house created successfully",
-            data: newGuesthouse,
+          images: {
+            createMany: { data: images?.map((url) => ({ url })) || [] },
           },
-          201
-        );
-      } catch (error) {
-        return c.json(
-          { success: false, error: "Error adding the guest house" },
-          500
-        );
-      }
+          ownerId: user.id,
+        },
+      });
+
+      return c.json(
+        {
+          success: true,
+          message: "Guest house created successfully",
+          data: newGuesthouse,
+        },
+        201
+      );
+    } catch (error) {
+      return c.json(
+        { success: false, error: "Error adding the guest house" },
+        500
+      );
     }
-  )
+  }
+);
 
-  // Récupération de toutes les guesthouses avec pagination et recherche
-  .get("/all", async (c) => {
+app.get(
+  "/all",
+  describeRoute({
+    tags: ["Guest House"],
+    description: "Get all guest houses with pagination and filtering",
+    responses: {
+      200: {
+        description: "Successful response",
+        content: {
+          "application/json": {
+            schema: z.object({
+              success: z.boolean(),
+              data: z.array(guestHouseSchema),
+              totalItems: z.number(),
+              pageInfo: z.object({
+                hasPreviousPage: z.boolean(),
+                hasNextPage: z.boolean(),
+              }),
+            }),
+          },
+        },
+      },
+      500: {
+        description: "Internal server error",
+      },
+    },
+  }),
+  async (c) => {
     try {
       const page = Number(c.req.query("page") || 1);
       const limit = Number(c.req.query("limit") || 10);
@@ -127,10 +183,35 @@ const app = new Hono()
         500
       );
     }
-  })
+  }
+);
 
-  // Récupération d'une guesthouse par son id
-  .get("/:id", async (c) => {
+app.get(
+  "/:id",
+  describeRoute({
+    tags: ["Guest House"],
+    description: "Get a guest house by ID",
+    responses: {
+      200: {
+        description: "Successful response",
+        content: {
+          "application/json": {
+            schema: z.object({
+              success: z.boolean(),
+              data: guestHouseSchema,
+            }),
+          },
+        },
+      },
+      404: {
+        description: "Guest house not found",
+      },
+      500: {
+        description: "Internal server error",
+      },
+    },
+  }),
+  async (c) => {
     try {
       const { id } = c.req.param();
 
@@ -178,9 +259,45 @@ const app = new Hono()
         500
       );
     }
-  })
+  }
+);
 
-  .put("/update/:id", zValidator("json", guestHouseSchema), async (c) => {
+app.put(
+  "/update/:id",
+  describeRoute({
+    tags: ["Guest House"],
+    description: "Update a guest house by ID",
+    request: {
+      body: {
+        content: {
+          "application/json": {
+            schema: guestHouseSchema,
+          },
+        },
+      },
+    },
+    responses: {
+      200: {
+        description: "Guest house updated successfully",
+        content: {
+          "application/json": {
+            schema: z.object({
+              success: z.boolean(),
+              message: z.string(),
+            }),
+          },
+        },
+      },
+      404: {
+        description: "Guest house not found",
+      },
+      500: {
+        description: "Internal server error",
+      },
+    },
+  }),
+  zValidator("json", guestHouseSchema),
+  async (c) => {
     try {
       const id = Number(c.req.param("id"));
       if (isNaN(id)) {
@@ -200,9 +317,7 @@ const app = new Hono()
       } = await c.req.valid("json");
 
       await db.contact.deleteMany({ where: { guestHouseId: id } });
-
       await db.image.deleteMany({ where: { guestHouseId: id } });
-
       await db.guestHouse.update({
         where: { id },
         data: { rooms: { set: [] } },
@@ -237,9 +352,35 @@ const app = new Hono()
       console.error("Error updating guest house:", error);
       return c.json({ success: false, error: "Internal server error" }, 500);
     }
-  })
-  // Suppression d'une guesthouse
-  .delete("/delete/:id", async (c) => {
+  }
+);
+
+app.delete(
+  "/delete/:id",
+  describeRoute({
+    tags: ["Guest House"],
+    description: "Delete a guest house by ID",
+    responses: {
+      200: {
+        description: "Guest house deleted successfully",
+        content: {
+          "application/json": {
+            schema: z.object({
+              success: z.boolean(),
+              message: z.string(),
+            }),
+          },
+        },
+      },
+      404: {
+        description: "Guest house not found",
+      },
+      500: {
+        description: "Internal server error",
+      },
+    },
+  }),
+  async (c) => {
     try {
       const { id } = c.req.param();
       if (!(await doesGuestHouseExist(Number(id)))) {
@@ -266,10 +407,46 @@ const app = new Hono()
         500
       );
     }
-  })
+  }
+);
 
-  // Mise à jour partielle d'une guesthouse
-  .patch("/patch/:id", zValidator("json", patchGuestHouseSchema), async (c) => {
+app.patch(
+  "/patch/:id",
+  describeRoute({
+    tags: ["Guest House"],
+    description: "Partially update a guest house by ID",
+    request: {
+      body: {
+        content: {
+          "application/json": {
+            schema: patchGuestHouseSchema,
+          },
+        },
+      },
+    },
+    responses: {
+      200: {
+        description: "Guest house updated successfully",
+        content: {
+          "application/json": {
+            schema: z.object({
+              success: z.boolean(),
+              message: z.string(),
+              data: guestHouseSchema,
+            }),
+          },
+        },
+      },
+      404: {
+        description: "Guest house not found",
+      },
+      500: {
+        description: "Internal server error",
+      },
+    },
+  }),
+  zValidator("json", patchGuestHouseSchema),
+  async (c) => {
     try {
       const { id } = c.req.param();
 
@@ -325,6 +502,7 @@ const app = new Hono()
         500
       );
     }
-  });
+  }
+);
 
 export default app;
