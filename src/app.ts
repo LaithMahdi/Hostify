@@ -9,6 +9,7 @@ import authRoutes from "@/controller/auth/auth.controller";
 import equipementRoutes from "@/controller/equipment/equipment.controller";
 import guesthouseRoutes from "@/controller/guest-house/guest.house.controller";
 import roomRoutes from "@/controller/room/room.controller";
+import { env } from "@/dotenv_config";
 
 const app = new Hono();
 app
@@ -16,7 +17,7 @@ app
   .use(
     "*",
     cors({
-      origin: "*",
+      origin: env.NEXT_FRONT_URL,
       allowHeaders: ["Content-Type", "Authorization"],
       allowMethods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
       credentials: true,
