@@ -1,164 +1,174 @@
 # Hostify Project
 
-Welcome to the **Hostify** project! This is a web application built with modern technologies. Follow the steps below to set up and run the project on your local machine.
+Welcome to **Hostify**! This web application is built using modern technologies to streamline property and guest house management.
 
 ---
 
-## Prerequisites
+## 🚀 Prerequisites
 
-Before you begin, ensure you have the following installed:
+Before setting up the project, ensure you have the following installed:
 
 - [Bun](https://bun.sh/) (v1.0 or higher)
 - [Prisma](https://www.prisma.io/) (installed globally via `bun add -g prisma`)
 - [Git](https://git-scm.com/) (for version control)
-- [PostgreSQL]() (database)
-- [Postman](https://www.postman.com/) (optional, for API testing)
+- [PostgreSQL](https://www.postgresql.org/) (database)
+- [Postman](https://www.postman.com/) _(optional, for API testing)_
 
 ---
 
-## Setup Instructions
+## ⚙️ Setup Instructions
 
-### 1. Clone the Repository
-
-First, clone the repository to your local machine:
+### 1️⃣ Clone the Repository
 
 ```bash
 git clone https://github.com/LaithMahdi/Hostify.git
 cd Hostify
 ```
 
-### 2. Install Dependencies
-
-Install all the required dependencies using Bun:
+### 2️⃣ Install Dependencies
 
 ```bash
 bun install
 ```
 
-### 3. Set Up Environment Variables
+### 3️⃣ Set Up Environment Variables
 
-Create a `.env` file in the root directory of the project and add the necessary environment variables. You can use the `.env.example` file as a template:
+Create a `.env` file in the root directory and configure it using `.env.example` as a template:
 
 ```bash
 DATABASE_URL="your-database-connection-string"
 ```
 
-Replace the placeholders with your actual database connection string and secret keys.
+Replace placeholders with actual values.
 
-### 4. Set Up the Database
+### 4️⃣ Set Up the Database
 
-Run the following commands to set up and migrate your database:
+Run the following commands:
 
 ```bash
-bun run generate
-bun run db
+bun run generate  # Generate Prisma client
+bun run db        # Apply schema to the database
 ```
 
-This will generate the Prisma client and push the schema to your database.
-
----
-
-## Running the Project
-
-### Start the Development Server
-
-To start the development server, run:
+### 5️⃣ Start the Development Server
 
 ```bash
 bun run dev
 ```
 
-This will start the server using `tsx watch` and automatically restart it whenever you make changes to the code.
+This runs the server in watch mode, restarting automatically on code changes.
 
 ---
 
-## Testing the API with Postman
+## 📌 API Documentation
 
-A Postman collection is provided in the root of the project to help you test the API endpoints. Here's how to use it:
+API documentation is available at:
+👉 [API Docs](http://localhost:3005/api-docs)
 
-1. **Install Postman**: If you don't have Postman installed, download and install it from [here](https://www.postman.com/downloads/).
+### 📍 API Endpoints Overview
 
-2. **Import the Collection**:
-
-   - Open Postman.
-   - Click on the **Import** button.
-   - Select the `Hostify.postman_collection.json` file located in the root of the project.
-
-3. **Set Up Environment Variables in Postman**:
-
-   - Create a new environment in Postman (e.g., `Hostify Local`).
-   - Add the following variables:
-     - `base_url`: Set this to `http://localhost:3000` (or your server's URL).
-     - `access_token`: Leave this blank; it will be populated after you log in.
-
-4. **Run the Requests**:
-   - Use the imported collection to test the API endpoints.
-   - Start with the **Auth** requests to log in and obtain an access token.
-
----
-
-## Useful Scripts
-
-Here are some useful scripts you can run for development and database management:
-
-- **`bun run dev`**: Start the development server.
-- **`bun run generate`**: Generate the Prisma client.
-- **`bun run db`**: Push the Prisma schema to the database.
-- **`bun run studio`**: Open Prisma Studio on port `8881` to manage your database.
-- **`bun run reset`**: Reset the database (use with caution).
+| Method | Endpoint                  | Description                      |
+| ------ | ------------------------- | -------------------------------- |
+| POST   | `/auth/register`          | Register a new user              |
+| POST   | `/auth/login`             | Log in a user                    |
+| GET    | `/auth/me`                | Get authenticated user info      |
+| POST   | `/equipment/create`       | Create new equipment             |
+| GET    | `/equipment/all`          | Get all equipment (paginated)    |
+| GET    | `/equipment/:id`          | Get equipment by ID              |
+| PUT    | `/equipment/update/:id`   | Update equipment by ID           |
+| DELETE | `/equipment/delete/:id`   | Delete equipment by ID           |
+| PATCH  | `/equipment/patch/:id`    | Partially update equipment       |
+| POST   | `/guest-house/create`     | Create a new guest house         |
+| GET    | `/guest-house/all`        | Get all guest houses (paginated) |
+| GET    | `/guest-house/:id`        | Get guest house by ID            |
+| PUT    | `/guest-house/update/:id` | Update guest house by ID         |
+| DELETE | `/guest-house/delete/:id` | Delete guest house by ID         |
+| PATCH  | `/guest-house/patch/:id`  | Partially update guest house     |
+| POST   | `/room/create`            | Create a new room                |
+| GET    | `/room/all`               | Get all rooms (paginated)        |
+| GET    | `/room/:id`               | Get room by ID                   |
+| GET    | `/room/my/`               | Get rooms associated with user   |
+| PUT    | `/room/update/:id`        | Update room by ID                |
+| DELETE | `/room/delete/:id`        | Delete room by ID                |
+| PATCH  | `/room/patch/:id`         | Partially update room by ID      |
 
 ---
 
-## Accessing Prisma Studio
+## 🛠️ API Testing with Postman
 
-To interact with your database visually, run:
+### 🔹 Import the Postman Collection
+
+1. Open Postman.
+2. Click on **Import**.
+3. Select the `Hostify.postman_collection.json` file from the root directory.
+
+### 🔹 Configure Postman Environment Variables
+
+1. Create a new environment (e.g., **Hostify Local**).
+2. Add the following variables:
+   - `base_url` → `http://localhost:3000`
+   - `access_token` → _(Leave blank, it will populate after login.)_
+
+### 🔹 Running Requests
+
+1. Start with the authentication requests to log in and obtain a token.
+2. Use the token for secured endpoints.
+
+---
+
+## 🔧 Useful Scripts
+
+| Command            | Description                                     |
+| ------------------ | ----------------------------------------------- |
+| `bun run dev`      | Start the development server                    |
+| `bun run generate` | Generate the Prisma client                      |
+| `bun run db`       | Push the Prisma schema to the database          |
+| `bun run studio`   | Open Prisma Studio (DB management) at port 8881 |
+| `bun run reset`    | Reset the database (⚠️ Deletes all data!)       |
+
+### 📌 Access Prisma Studio
 
 ```bash
 bun run studio
 ```
 
-Then, open your browser and navigate to `http://localhost:8881`.
+Navigate to [http://localhost:8881](http://localhost:8881) in your browser.
 
----
-
-## Resetting the Database
-
-If you need to reset the database, run:
+### ⚠️ Reset the Database
 
 ```bash
 bun run reset
 ```
 
-**Warning**: This will delete all data in the database and reapply the schema.
+🚨 **Warning**: This will erase all data and reapply the schema.
 
 ---
 
-## Contributing
+## 🤝 Contributing
 
-If you'd like to contribute to the project, follow these steps:
+We welcome contributions! Follow these steps:
 
-1. Fork the repository.
-2. Create a new branch for your feature or bugfix.
-3. Make your changes and commit them.
-4. Push your changes to your fork.
-5. Submit a pull request.
-
----
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+1. **Fork** the repository.
+2. **Create** a new branch for your feature or bugfix.
+3. **Commit** your changes with clear messages.
+4. **Push** to your forked repository.
+5. **Submit** a pull request.
 
 ---
 
-## Questions or Issues?
+## 📜 License
 
-If you have any questions or run into issues, feel free to open an issue on GitHub or reach out to me directly.
+This project is licensed under the **MIT License**. See the `LICENSE` file for details.
 
 ---
 
-### Key Additions:
+## ❓ Questions or Issues?
 
-1. **Postman Collection Section**: Added a dedicated section explaining how to use the Postman collection for API testing.
-2. **Steps for Importing and Using the Collection**: Provided clear instructions for importing the collection and setting up environment variables in Postman.
-3. **Encouraged Testing**: Highlighted the importance of testing the API using the provided collection.
+If you have any questions or run into issues:
+
+- Open an issue on **GitHub**.
+- Reach out to me directly.
+
+---
+
+### 🚀 Happy Coding & Enjoy Hostify! 🎉
