@@ -4,15 +4,13 @@ import { zValidator } from "@hono/zod-validator";
 import { roomSchema, patchRoomSchema } from "@/schemas";
 import { doesRoomExist } from "@/controller/room/room.service";
 import { authMiddleware } from "@/middleware/auth_middleware";
-import { roleMiddleware } from "@/middleware/role_middleware";
-import { Role } from "@prisma/client";
 
 const app = new Hono()
   .post(
     "/create",
     zValidator("json", roomSchema),
     authMiddleware,
-    roleMiddleware([Role.ADMIN, Role.OWNER]),
+    // roleMiddleware([Role.ADMIN, Role.OWNER]),
     async (c) => {
       try {
         const user = c.get("user");
@@ -27,6 +25,7 @@ const app = new Hono()
           guestHouseId,
           isActive,
           images,
+          equipements,
         } = await c.req.valid("json");
 
         // Création de la chambre
@@ -40,6 +39,11 @@ const app = new Hono()
             type,
             description,
             guestHouseId: guestHouseId!,
+            equipment: {
+              connect: equipements
+                ? equipements.map((id: number) => ({ id }))
+                : [],
+            },
             isActive,
             images: {
               createMany: { data: images?.map((url) => ({ url })) || [] },
@@ -71,19 +75,22 @@ const app = new Hono()
     try {
       const page = Number(c.req.query("page") || 1);
       const limit = Number(c.req.query("limit") || 10);
-      const search = c.req.query("search") || "";
-      const status = c.req.query("status");
+      const status = c.req.query("status") || null;
+      const roomNumber = Number(c.req.query("roomNumber") || "0");
 
       const skip = (page - 1) * limit;
 
-      const filters: any = {
-        description: {
-          contains: search,
-          mode: "insensitive",
-        },
-      };
+      const filters: any = {};
 
-      if (status) filters.status = status;
+      if (status) {
+        filters.status = status;
+      }
+
+      if (roomNumber) {
+        filters.roomNumber = {
+          equals: roomNumber,
+        };
+      }
 
       const [totalItems, rooms] = await Promise.all([
         db.room.count({ where: filters }),
@@ -91,7 +98,7 @@ const app = new Hono()
           skip,
           take: limit,
           where: filters,
-          orderBy: { id: "asc" },
+          orderBy: { createdAt: "desc" },
         }),
       ]);
 

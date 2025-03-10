@@ -90,6 +90,7 @@ export const roomSchema = z.object({
   guestHouseId: z.number().optional(),
   isActive: z.boolean().default(true),
   images: z.array(z.string()).optional(),
+  equipements: z.array(z.number()).optional(),
 });
 
 export const patchRoomSchema = z.object({
