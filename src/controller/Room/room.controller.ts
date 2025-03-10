@@ -4,13 +4,25 @@ import { zValidator } from "@hono/zod-validator";
 import { roomSchema, patchRoomSchema } from "@/schemas";
 import { doesRoomExist } from "@/controller/room/room.service";
 import { authMiddleware } from "@/middleware/auth_middleware";
+import { roleMiddleware } from "@/middleware/role_middleware";
+import { Role } from "@prisma/client";
+import {
+  createRoomDocs,
+  deleteRoomDocs,
+  getAllRoomsDocs,
+  getMyRoomsDocs,
+  getRoomByIdDocs,
+  patchRoomDocs,
+  updateRoomDocs,
+} from "./docs/room.docs";
 
 const app = new Hono()
   .post(
     "/create",
+    createRoomDocs,
     zValidator("json", roomSchema),
     authMiddleware,
-    // roleMiddleware([Role.ADMIN, Role.OWNER]),
+    roleMiddleware([Role.ADMIN, Role.OWNER]),
     async (c) => {
       try {
         const user = c.get("user");
@@ -71,7 +83,7 @@ const app = new Hono()
       }
     }
   )
-  .get("/all", async (c) => {
+  .get("/all", getAllRoomsDocs, authMiddleware, async (c) => {
     try {
       const page = Number(c.req.query("page") || 1);
       const limit = Number(c.req.query("limit") || 10);
@@ -121,7 +133,7 @@ const app = new Hono()
       );
     }
   })
-  .get("/:id", async (c) => {
+  .get("/:id", getRoomByIdDocs, authMiddleware, async (c) => {
     try {
       const { id } = c.req.param();
 
@@ -144,7 +156,7 @@ const app = new Hono()
       );
     }
   })
-  .get("/my/", authMiddleware, async (c) => {
+  .get("/my/", getMyRoomsDocs, authMiddleware, async (c) => {
     try {
       const user = c.get("user");
       const rooms = await db.room.findMany({
@@ -165,9 +177,116 @@ const app = new Hono()
       );
     }
   })
-  .put("/update/:id", zValidator("json", roomSchema), async (c) => {
-    try {
-      const id = c.req.param("id");
+  .put(
+    "/update/:id",
+    updateRoomDocs,
+    authMiddleware,
+    roleMiddleware([Role.ADMIN, Role.OWNER]),
+    zValidator("json", roomSchema),
+    async (c) => {
+      try {
+        const id = c.req.param("id");
+        const {
+          capacity,
+          hasBalcony,
+          pricePerNight,
+          roomNumber,
+          status,
+          type,
+          description,
+          guestHouseId,
+          isActive,
+          images,
+          equipements,
+        } = await c.req.valid("json");
+
+        if (!(await doesRoomExist(Number(id)))) {
+          return c.json({ success: false, error: "Room not found" }, 404);
+        }
+
+        await db.image.deleteMany({ where: { roomId: Number(id) } });
+        await db.room.update({
+          where: { id: Number(id) },
+          data: {
+            equipment: { set: [] },
+          },
+        });
+
+        const updatedRoom = await db.room.update({
+          where: { id: Number(id) },
+          data: {
+            capacity,
+            hasBalcony,
+            pricePerNight,
+            roomNumber,
+            status,
+            type,
+            description,
+            guestHouseId: guestHouseId!,
+            isActive,
+            images: {
+              createMany: { data: images?.map((url) => ({ url })) || [] },
+            },
+            equipment: {
+              connect: equipements
+                ? equipements.map((id: number) => ({ id }))
+                : [],
+            },
+          },
+        });
+
+        return c.json({
+          success: true,
+          message: "Room updated successfully",
+          data: updatedRoom,
+        });
+      } catch (error) {
+        return c.json(
+          { success: false, error: "Error updating the room" },
+          500
+        );
+      }
+    }
+  )
+  .delete(
+    "/delete/:id",
+    deleteRoomDocs,
+    authMiddleware,
+    roleMiddleware([Role.ADMIN, Role.OWNER]),
+    async (c) => {
+      try {
+        const { id } = c.req.param();
+
+        if (!(await doesRoomExist(Number(id)))) {
+          return c.json({ success: false, error: "Room not found" }, 404);
+        }
+
+        await db.image.deleteMany({ where: { roomId: Number(id) } });
+
+        await db.room.delete({ where: { id: Number(id) } });
+
+        return c.json({ success: true, message: "Room deleted successfully" });
+      } catch (error) {
+        return c.json(
+          { success: false, error: "Error deleting the room" },
+          500
+        );
+      }
+    }
+  )
+  .patch(
+    "/patch/:id",
+    patchRoomDocs,
+    authMiddleware,
+    roleMiddleware([Role.ADMIN, Role.OWNER]),
+    zValidator("json", patchRoomSchema),
+    async (c) => {
+      const { id } = c.req.param();
+
+      if (!(await doesRoomExist(Number(id)))) {
+        return c.json({ success: false, error: "Room not found" }, 404);
+      }
+
       const {
         capacity,
         hasBalcony,
@@ -181,10 +300,6 @@ const app = new Hono()
         images,
       } = await c.req.valid("json");
 
-      if (!(await doesRoomExist(Number(id)))) {
-        return c.json({ success: false, error: "Room not found" }, 404);
-      }
-
       const updatedRoom = await db.room.update({
         where: { id: Number(id) },
         data: {
@@ -195,11 +310,8 @@ const app = new Hono()
           status,
           type,
           description,
-          guestHouseId: guestHouseId!,
+          guestHouseId: guestHouseId,
           isActive,
-          images: {
-            createMany: { data: images?.map((url) => ({ url })) || [] },
-          },
         },
       });
 
@@ -208,65 +320,7 @@ const app = new Hono()
         message: "Room updated successfully",
         data: updatedRoom,
       });
-    } catch (error) {
-      return c.json({ success: false, error: "Error updating the room" }, 500);
     }
-  })
-  .delete("/delete/:id", async (c) => {
-    try {
-      const { id } = c.req.param();
-
-      if (!(await doesRoomExist(Number(id)))) {
-        return c.json({ success: false, error: "Room not found" }, 404);
-      }
-
-      await db.room.delete({ where: { id: Number(id) } });
-
-      return c.json({ success: true, message: "Room deleted successfully" });
-    } catch (error) {
-      return c.json({ success: false, error: "Error deleting the room" }, 500);
-    }
-  })
-  .patch("/patch/:id", zValidator("json", patchRoomSchema), async (c) => {
-    const { id } = c.req.param();
-
-    if (!(await doesRoomExist(Number(id)))) {
-      return c.json({ success: false, error: "Room not found" }, 404);
-    }
-
-    const {
-      capacity,
-      hasBalcony,
-      pricePerNight,
-      roomNumber,
-      status,
-      type,
-      description,
-      guestHouseId,
-      isActive,
-      images,
-    } = await c.req.valid("json");
-
-    const updatedRoom = await db.room.update({
-      where: { id: Number(id) },
-      data: {
-        capacity,
-        hasBalcony,
-        pricePerNight,
-        roomNumber,
-        status,
-        type,
-        description,
-        guestHouseId: guestHouseId,
-        isActive,
-      },
-    });
-
-    return c.json({
-      success: true,
-      message: "Room updated successfully",
-      data: updatedRoom,
-    });
-  });
+  );
 
 export default app;
