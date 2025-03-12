@@ -290,6 +290,10 @@ const app = new Hono()
         }
 
         await db.image.deleteMany({ where: { roomId: Number(id) } });
+        await db.room.update({
+          where: { id: Number(id) },
+          data: { equipment: { set: [] } },
+        });
 
         await db.room.delete({ where: { id: Number(id) } });
 
