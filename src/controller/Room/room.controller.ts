@@ -41,7 +41,7 @@ const app = new Hono()
         } = await c.req.valid("json");
 
         // Création de la chambre
-        const newRoom = await db.room.create({
+        await db.room.create({
           data: {
             capacity,
             hasBalcony,
@@ -68,7 +68,6 @@ const app = new Hono()
           {
             success: true,
             message: "Room created successfully",
-            data: newRoom,
           },
           201
         );
@@ -143,11 +142,40 @@ const app = new Hono()
 
       const room = await db.room.findUnique({
         where: { id: Number(id) },
+        include: {
+          images: true,
+          equipment: true,
+        },
       });
+
+      const formattedRoom = {
+        id: room?.id,
+        capacity: room?.capacity,
+        hasBalcony: room?.hasBalcony,
+        pricePerNight: room?.pricePerNight,
+        roomNumber: room?.roomNumber,
+        status: room?.status,
+        type: room?.type,
+        description: room?.description,
+        guestHouseId: room?.guestHouseId,
+        isActive: room?.isActive,
+        createdAt: room?.createdAt,
+
+        images:
+          room?.images.map((image) => ({
+            id: image.id,
+            url: image.url,
+          })) || [],
+        equipments:
+          room?.equipment.map((equipement) => ({
+            id: equipement.id,
+            name: equipement.name,
+          })) || [],
+      };
 
       return c.json({
         success: true,
-        data: room,
+        data: formattedRoom,
       });
     } catch (error) {
       return c.json(
@@ -300,6 +328,8 @@ const app = new Hono()
         images,
       } = await c.req.valid("json");
 
+      await db.image.deleteMany({ where: { roomId: Number(id) } });
+
       const updatedRoom = await db.room.update({
         where: { id: Number(id) },
         data: {
@@ -312,6 +342,9 @@ const app = new Hono()
           description,
           guestHouseId: guestHouseId,
           isActive,
+          images: {
+            createMany: { data: images?.map((url) => ({ url })) || [] },
+          },
         },
       });
 
