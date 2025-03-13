@@ -40,8 +40,10 @@ const app = new Hono()
           equipements,
         } = await c.req.valid("json");
 
+        console.log(c.req.valid("json"));
+
         // Création de la chambre
-        await db.room.create({
+        const newRoom = await db.room.create({
           data: {
             capacity,
             hasBalcony,
@@ -68,10 +70,12 @@ const app = new Hono()
           {
             success: true,
             message: "Room created successfully",
+            data: newRoom,
           },
           201
         );
       } catch (error) {
+        console.log("error", error);
         return c.json(
           {
             success: false,
@@ -149,34 +153,18 @@ const app = new Hono()
       });
 
       const formattedRoom = {
-        id: room?.id,
-        capacity: room?.capacity,
-        hasBalcony: room?.hasBalcony,
-        pricePerNight: room?.pricePerNight,
-        roomNumber: room?.roomNumber,
-        status: room?.status,
-        type: room?.type,
-        description: room?.description,
-        guestHouseId: room?.guestHouseId,
-        isActive: room?.isActive,
-        createdAt: room?.createdAt,
-
-        images:
-          room?.images.map((image) => ({
-            id: image.id,
-            url: image.url,
-          })) || [],
-        equipments:
-          room?.equipment.map((equipement) => ({
-            id: equipement.id,
-            name: equipement.name,
-          })) || [],
+        ...room,
+        images: room?.images.map((image) => ({
+          id: image.id,
+          url: image.url,
+        })),
+        equipment: room?.equipment.map((equipement) => ({
+          id: equipement.id,
+          name: equipement.name,
+        })),
       };
 
-      return c.json({
-        success: true,
-        data: formattedRoom,
-      });
+      return c.json({ success: true, data: formattedRoom });
     } catch (error) {
       return c.json(
         { success: false, error: "Error retrieving the room" },
@@ -290,10 +278,6 @@ const app = new Hono()
         }
 
         await db.image.deleteMany({ where: { roomId: Number(id) } });
-        await db.room.update({
-          where: { id: Number(id) },
-          data: { equipment: { set: [] } },
-        });
 
         await db.room.delete({ where: { id: Number(id) } });
 
@@ -332,8 +316,6 @@ const app = new Hono()
         images,
       } = await c.req.valid("json");
 
-      await db.image.deleteMany({ where: { roomId: Number(id) } });
-
       const updatedRoom = await db.room.update({
         where: { id: Number(id) },
         data: {
@@ -346,9 +328,6 @@ const app = new Hono()
           description,
           guestHouseId: guestHouseId,
           isActive,
-          images: {
-            createMany: { data: images?.map((url) => ({ url })) || [] },
-          },
         },
       });
 
