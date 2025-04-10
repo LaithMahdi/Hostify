@@ -15,9 +15,10 @@ model User {
   role      Role     @default(GUEST)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
   rooms     Room[]
   guestHouses GuestHouse[]
+  reservations Reservation[] @relation("ClientReservations")
+  guests      Guest[]   
 }
 
 model Equipment {
@@ -27,7 +28,6 @@ model Equipment {
   description String?
   isActive    Boolean  @default(true)
   rooms       Room[]
-
   createdAt   DateTime @default(now())
 }
 
@@ -43,10 +43,8 @@ model GuestHouse {
   rooms         Room[] 
   images        Image[]
   contacts      Contact[]
-
   owner         User     @relation(fields: [ownerId], references: [id])
   ownerId       String
-  
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
@@ -65,10 +63,9 @@ model Room {
   equipment      Equipment[]
   guestHouse  GuestHouse? @relation(fields: [guestHouseId], references: [id], onDelete: Cascade)
   isActive       Boolean    @default(true)
-
   owner          User       @relation(fields: [ownerId], references: [id])
   ownerId        String
-
+  reservations   Reservation[]
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
@@ -85,13 +82,57 @@ model Contact {
 model Image {
   id           Int      @id @default(autoincrement())
   url          String
-
   guestHouseId Int?    
   guestHouse   GuestHouse? @relation(fields: [guestHouseId], references: [id]) 
   roomId       Int?
   room         Room? @relation(fields: [roomId], references: [id])
-
   createdAt    DateTime @default(now())
+}
+
+model Guest {
+  id          String   @id @default(cuid())
+  fullName    String
+  email       String?
+  phone       String?
+  age         Int?
+  relationship Relationship @default(OTHER)
+  addedBy     User     @relation(fields: [addedById], references: [id])
+  addedById   String
+  reservations Reservation[]
+  createdAt   DateTime @default(now())
+}
+
+model Reservation {
+  id          String   @id @default(cuid())
+  checkIn     DateTime
+  checkOut    DateTime
+  totalPrice  Float
+  room        Room     @relation(fields: [roomId], references: [id])
+  roomId      Int
+  client      User     @relation("ClientReservations", fields: [clientId], references: [id])
+  clientId    String
+  guests      Guest[]  
+  status      ReservationStatus @default(PENDING)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum Relationship {
+  SPOUSE
+  PARTNER
+  CHILD
+  PARENT
+  SIBLING
+  FRIEND
+  RELATIVE
+  OTHER
 }
 
 enum RoomType {
