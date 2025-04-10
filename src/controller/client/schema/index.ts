@@ -6,4 +6,7 @@ export const clientSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
   phone: z.string().min(1, { message: "Phone number is required." }),
   relation: z.nativeEnum(Relationship).default(Relationship.OTHER),
+  age: z.coerce.number().min(1, { message: "Age is required." }),
 });
+
+export const patchClientSchema = clientSchema.partial();

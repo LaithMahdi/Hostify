@@ -10,6 +10,7 @@ import equipementRoutes from "@/controller/equipment/equipment.controller";
 import guesthouseRoutes from "@/controller/guest-house/guest.house.controller";
 import roomRoutes from "@/controller/room/room.controller";
 import reservationRoutes from "@/controller/reservation/reservation.controller";
+import clientRoutes from "@/controller/client/client.controller";
 import { env } from "@/dotenv_config";
 
 const app = new Hono();
@@ -32,6 +33,7 @@ app
   .route("/equipment", equipementRoutes)
   .route("/guest-house", guesthouseRoutes)
   .route("/room", roomRoutes)
+  .route("/client", clientRoutes)
   .route("/reservation", reservationRoutes);
 app.get(
   "/openapi",
