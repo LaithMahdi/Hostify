@@ -91,15 +91,31 @@ model Image {
 
 model Guest {
   id          String   @id @default(cuid())
+  cin         Int   @unique
+  numPassport Int?  @unique
   fullName    String
   email       String?
   phone       String?
+  gender      Gender
   age         Int?
   relationship Relationship @default(OTHER)
   addedBy     User     @relation(fields: [addedById], references: [id])
   addedById   String
+  membre      Membre[]
   reservations Reservation[]
   createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Membre{
+  id Int @id @default(autoincrement())
+  fullName String
+  gender  Gender 
+  relationship Relationship
+  isManier Boolean @default(false)
+  guestId String
+  guest Guest @relation(fields: [guestId], references: [id])
+  createdAt DateTime @default(now())
 }
 
 model Reservation {
@@ -161,4 +177,9 @@ enum ContactType {
   INSTAGRAM
   EMAIL
   WEBSITE
+}
+
+enum Gender {
+  MALE
+  FEMALE
 }

@@ -23,7 +23,17 @@ const app = new Hono()
     async (c) => {
       try {
         const user = c.get("user");
-        const { fullName, email, phone, age, relation } = c.req.valid("json");
+        const {
+          fullName,
+          email,
+          phone,
+          age,
+          cin,
+          gender,
+          members,
+          relationship,
+          numPassport,
+        } = c.req.valid("json");
 
         const newClient = await db.guest.create({
           data: {
@@ -31,7 +41,18 @@ const app = new Hono()
             email,
             phone,
             age,
-            relationship: relation,
+            cin,
+            numPassport,
+            gender,
+            relationship,
+            membre: {
+              create: members.map((member) => ({
+                fullName: member.fullName,
+                gender: member.gender,
+                relationship: member.relationship,
+                isManier: member.isManier,
+              })),
+            },
             addedById: user.id,
           },
         });
@@ -61,6 +82,10 @@ const app = new Hono()
 
       const allClients = await db.guest.findMany({
         where: { addedById: user.id },
+        include: {
+          membre: true,
+          reservations: true,
+        },
       });
       return c.json({ success: true, data: allClients });
     } catch (error) {
@@ -105,6 +130,10 @@ const app = new Hono()
             take: limit,
             where: filters,
             orderBy: { createdAt: "desc" },
+            include: {
+              membre: true,
+              reservations: true,
+            },
           }),
         ]);
         return c.json({
@@ -137,7 +166,21 @@ const app = new Hono()
         const id = c.req.param("id");
 
         const user = c.get("user");
-        const { fullName, email, phone, age, relation } = c.req.valid("json");
+        const {
+          fullName,
+          email,
+          phone,
+          age,
+          cin,
+          gender,
+          members,
+          relationship,
+          numPassport,
+        } = c.req.valid("json");
+
+        await db.membre.deleteMany({
+          where: { guestId: id },
+        });
 
         const updatedClient = await db.guest.update({
           where: { id },
@@ -146,7 +189,18 @@ const app = new Hono()
             email,
             phone,
             age,
-            relationship: relation,
+            cin,
+            numPassport,
+            gender,
+            relationship,
+            membre: {
+              create: members.map((member) => ({
+                fullName: member.fullName,
+                gender: member.gender,
+                relationship: member.relationship,
+                isManier: member.isManier,
+              })),
+            },
             addedById: user.id,
           },
         });
@@ -175,9 +229,22 @@ const app = new Hono()
     async (c) => {
       try {
         const id = c.req.param("id");
-
         const user = c.get("user");
-        const { fullName, email, phone, age, relation } = c.req.valid("json");
+        const {
+          fullName,
+          email,
+          phone,
+          age,
+          cin,
+          gender,
+          members,
+          relationship,
+          numPassport,
+        } = c.req.valid("json");
+
+        await db.membre.deleteMany({
+          where: { guestId: id },
+        });
 
         const updatedClient = await db.guest.update({
           where: { id },
@@ -186,7 +253,18 @@ const app = new Hono()
             email,
             phone,
             age,
-            relationship: relation,
+            cin,
+            numPassport,
+            gender,
+            relationship,
+            membre: {
+              create: members?.map((member) => ({
+                fullName: member.fullName,
+                gender: member.gender,
+                relationship: member.relationship,
+                isManier: member.isManier,
+              })),
+            },
             addedById: user.id,
           },
         });

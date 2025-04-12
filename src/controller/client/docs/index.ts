@@ -1,17 +1,45 @@
 import { describeRoute } from "hono-openapi";
 import { z } from "zod";
-import { zodToJsonSchema } from "zod-to-json-schema";
 import { clientSchema, patchClientSchema } from "../schema";
+import { zodToJsonSchema } from "zod-to-json-schema";
+import { Gender, Relationship } from "@prisma/client";
+
+// Extended schemas to include relations
+const memberSchema = z.object({
+  id: z.string(),
+  fullName: z.string(),
+  gender: z.nativeEnum(Gender),
+  relationship: z.nativeEnum(Relationship),
+  isManier: z.boolean(),
+  guestId: z.string(),
+});
+
+const reservationSchema = z.object({
+  id: z.string(),
+  // Add all reservation fields as needed
+});
+
+const clientWithRelationsSchema = clientSchema.extend({
+  id: z.string(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  addedById: z.string(),
+  membre: z.array(memberSchema),
+  reservations: z.array(reservationSchema),
+});
 
 // Convert Zod schemas to JSON schemas
 const clientJsonSchema = zodToJsonSchema(clientSchema);
 const patchClientJsonSchema = zodToJsonSchema(patchClientSchema);
+const clientWithRelationsJsonSchema = zodToJsonSchema(
+  clientWithRelationsSchema
+);
 
 // Common response schemas
 const successResponseSchema = z.object({
   success: z.boolean(),
   message: z.string(),
-  data: clientSchema,
+  data: clientWithRelationsSchema.optional(),
 });
 
 const errorResponseSchema = z.object({
@@ -21,18 +49,13 @@ const errorResponseSchema = z.object({
 
 const paginatedResponseSchema = z.object({
   success: z.boolean(),
-  data: z.array(clientSchema),
+  data: z.array(clientWithRelationsSchema),
   totalItems: z.number(),
   pageInfo: z.object({
     hasPreviousPage: z.boolean(),
     hasNextPage: z.boolean(),
   }),
 });
-
-// Convert to JSON schemas
-const successResponseJsonSchema = zodToJsonSchema(successResponseSchema);
-const errorResponseJsonSchema = zodToJsonSchema(errorResponseSchema);
-const paginatedResponseJsonSchema = zodToJsonSchema(paginatedResponseSchema);
 
 // Create Client Documentation
 export const createClientDocs = describeRoute({
@@ -52,7 +75,7 @@ export const createClientDocs = describeRoute({
       description: "Client created successfully",
       content: {
         "application/json": {
-          schema: successResponseJsonSchema,
+          schema: zodToJsonSchema(successResponseSchema),
         },
       },
     },
@@ -60,7 +83,7 @@ export const createClientDocs = describeRoute({
       description: "Invalid input data",
       content: {
         "application/json": {
-          schema: errorResponseJsonSchema,
+          schema: zodToJsonSchema(errorResponseSchema),
         },
       },
     },
@@ -68,7 +91,7 @@ export const createClientDocs = describeRoute({
       description: "Internal server error",
       content: {
         "application/json": {
-          schema: errorResponseJsonSchema,
+          schema: zodToJsonSchema(errorResponseSchema),
         },
       },
     },
@@ -80,17 +103,19 @@ export const getUserClientsDocs = describeRoute({
   tags: ["Clients"],
   summary: "Get clients added by current user",
   description:
-    "Retrieve all clients/family members added by the authenticated user",
+    "Retrieve all clients/family members added by the authenticated user including their members and reservations",
   security: [{ bearerAuth: [] }],
   responses: {
     200: {
-      description: "List of clients",
+      description: "List of clients with relations",
       content: {
         "application/json": {
-          schema: z.object({
-            success: z.boolean(),
-            data: z.array(clientSchema),
-          }),
+          schema: zodToJsonSchema(
+            z.object({
+              success: z.boolean(),
+              data: z.array(clientWithRelationsSchema),
+            })
+          ),
         },
       },
     },
@@ -98,7 +123,7 @@ export const getUserClientsDocs = describeRoute({
       description: "Internal server error",
       content: {
         "application/json": {
-          schema: errorResponseJsonSchema,
+          schema: zodToJsonSchema(errorResponseSchema),
         },
       },
     },
@@ -110,7 +135,7 @@ export const getAllClientsDocs = describeRoute({
   tags: ["Clients"],
   summary: "Get all clients (Admin only)",
   description:
-    "Retrieve all clients with pagination and filtering (Admin role required)",
+    "Retrieve all clients with pagination, filtering, and their relations (Admin role required)",
   security: [{ bearerAuth: [] }],
   parameters: [
     {
@@ -144,10 +169,10 @@ export const getAllClientsDocs = describeRoute({
   ],
   responses: {
     200: {
-      description: "Paginated list of clients",
+      description: "Paginated list of clients with relations",
       content: {
         "application/json": {
-          schema: paginatedResponseJsonSchema,
+          schema: zodToJsonSchema(paginatedResponseSchema),
         },
       },
     },
@@ -155,7 +180,7 @@ export const getAllClientsDocs = describeRoute({
       description: "Forbidden - Admin role required",
       content: {
         "application/json": {
-          schema: errorResponseJsonSchema,
+          schema: zodToJsonSchema(errorResponseSchema),
         },
       },
     },
@@ -163,7 +188,7 @@ export const getAllClientsDocs = describeRoute({
       description: "Internal server error",
       content: {
         "application/json": {
-          schema: errorResponseJsonSchema,
+          schema: zodToJsonSchema(errorResponseSchema),
         },
       },
     },
@@ -174,7 +199,7 @@ export const getAllClientsDocs = describeRoute({
 export const updateClientDocs = describeRoute({
   tags: ["Clients"],
   summary: "Update a client",
-  description: "Update a client/guest record by ID",
+  description: "Update a client/guest record by ID including their members",
   security: [{ bearerAuth: [] }],
   parameters: [
     {
@@ -197,7 +222,7 @@ export const updateClientDocs = describeRoute({
       description: "Client updated successfully",
       content: {
         "application/json": {
-          schema: successResponseJsonSchema,
+          schema: zodToJsonSchema(successResponseSchema),
         },
       },
     },
@@ -205,7 +230,7 @@ export const updateClientDocs = describeRoute({
       description: "Client not found",
       content: {
         "application/json": {
-          schema: errorResponseJsonSchema,
+          schema: zodToJsonSchema(errorResponseSchema),
         },
       },
     },
@@ -213,7 +238,7 @@ export const updateClientDocs = describeRoute({
       description: "Internal server error",
       content: {
         "application/json": {
-          schema: errorResponseJsonSchema,
+          schema: zodToJsonSchema(errorResponseSchema),
         },
       },
     },
@@ -247,7 +272,7 @@ export const patchClientDocs = describeRoute({
       description: "Client updated successfully",
       content: {
         "application/json": {
-          schema: successResponseJsonSchema,
+          schema: zodToJsonSchema(successResponseSchema),
         },
       },
     },
@@ -255,7 +280,7 @@ export const patchClientDocs = describeRoute({
       description: "Client not found",
       content: {
         "application/json": {
-          schema: errorResponseJsonSchema,
+          schema: zodToJsonSchema(errorResponseSchema),
         },
       },
     },
@@ -263,7 +288,7 @@ export const patchClientDocs = describeRoute({
       description: "Internal server error",
       content: {
         "application/json": {
-          schema: errorResponseJsonSchema,
+          schema: zodToJsonSchema(errorResponseSchema),
         },
       },
     },
@@ -290,10 +315,12 @@ export const deleteClientDocs = describeRoute({
       description: "Client deleted successfully",
       content: {
         "application/json": {
-          schema: z.object({
-            success: z.boolean(),
-            message: z.string(),
-          }),
+          schema: zodToJsonSchema(
+            z.object({
+              success: z.boolean(),
+              message: z.string(),
+            })
+          ),
         },
       },
     },
@@ -301,7 +328,7 @@ export const deleteClientDocs = describeRoute({
       description: "Client not found",
       content: {
         "application/json": {
-          schema: errorResponseJsonSchema,
+          schema: zodToJsonSchema(errorResponseSchema),
         },
       },
     },
@@ -309,7 +336,7 @@ export const deleteClientDocs = describeRoute({
       description: "Internal server error",
       content: {
         "application/json": {
-          schema: errorResponseJsonSchema,
+          schema: zodToJsonSchema(errorResponseSchema),
         },
       },
     },
