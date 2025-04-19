@@ -128,9 +128,9 @@ export const getUserClientsDocs = describeRoute({
       schema: { type: "string" },
     },
     {
-      name: "phone",
+      name: "cin",
       in: "query",
-      description: "Filter by phone number",
+      description: "Filter by CIN number",
       required: false,
       schema: { type: "string" },
     },
@@ -195,9 +195,9 @@ export const getAllClientsDocs = describeRoute({
       schema: { type: "string" },
     },
     {
-      name: "phone",
+      name: "cin",
       in: "query",
-      description: "Filter by phone number",
+      description: "Filter by CIN number",
       required: false,
       schema: { type: "string" },
     },

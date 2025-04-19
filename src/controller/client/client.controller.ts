@@ -83,7 +83,7 @@ const app = new Hono()
       const limit = Number(c.req.query("limit") || 10);
 
       const search = c.req.query("search") || "";
-      const phone = c.req.query("phone") || "";
+      const cin = c.req.query("cin") || "";
       const skip = (page - 1) * limit;
 
       const filters: any = {
@@ -92,7 +92,7 @@ const app = new Hono()
           mode: "insensitive",
         },
         phone: {
-          contains: phone,
+          contains: cin,
           mode: "insensitive",
         },
       };
@@ -147,7 +147,7 @@ const app = new Hono()
         const page = Number(c.req.query("page") || 1);
         const limit = Number(c.req.query("limit") || 10);
         const search = c.req.query("search") || "";
-        const phone = c.req.query("phone") || "";
+        const cin = c.req.query("cin") || "";
         const skip = (page - 1) * limit;
 
         const filters: any = {
@@ -156,7 +156,7 @@ const app = new Hono()
             mode: "insensitive",
           },
           phone: {
-            contains: phone,
+            contains: cin,
             mode: "insensitive",
           },
         };
