@@ -103,17 +103,52 @@ export const getUserClientsDocs = describeRoute({
   tags: ["Clients"],
   summary: "Get clients added by current user",
   description:
-    "Retrieve all clients/family members added by the authenticated user including their members and reservations",
+    "Retrieve all clients/family members added by the authenticated user including their members and reservations. Supports pagination and filtering by name and phone number.",
   security: [{ bearerAuth: [] }],
+  parameters: [
+    {
+      name: "page",
+      in: "query",
+      description: "Page number",
+      required: false,
+      schema: { type: "integer", minimum: 1 },
+    },
+    {
+      name: "limit",
+      in: "query",
+      description: "Items per page",
+      required: false,
+      schema: { type: "integer", minimum: 1, maximum: 100 },
+    },
+    {
+      name: "search",
+      in: "query",
+      description: "Search by name",
+      required: false,
+      schema: { type: "string" },
+    },
+    {
+      name: "phone",
+      in: "query",
+      description: "Filter by phone number",
+      required: false,
+      schema: { type: "string" },
+    },
+  ],
   responses: {
     200: {
-      description: "List of clients with relations",
+      description: "Paginated list of clients with relations",
       content: {
         "application/json": {
           schema: zodToJsonSchema(
             z.object({
               success: z.boolean(),
               data: z.array(clientWithRelationsSchema),
+              totalItems: z.number(),
+              pageInfo: z.object({
+                hasPreviousPage: z.boolean(),
+                hasNextPage: z.boolean(),
+              }),
             })
           ),
         },

@@ -79,15 +79,53 @@ const app = new Hono()
   .get("/added-by", getUserClientsDocs, authMiddleware, async (c) => {
     try {
       const user = c.get("user");
+      const page = Number(c.req.query("page") || 1);
+      const limit = Number(c.req.query("limit") || 10);
 
-      const allClients = await db.guest.findMany({
-        where: { addedById: user.id },
-        include: {
-          membre: true,
-          reservations: true,
+      const search = c.req.query("search") || "";
+      const phone = c.req.query("phone") || "";
+      const skip = (page - 1) * limit;
+
+      const filters: any = {
+        fullName: {
+          contains: search,
+          mode: "insensitive",
+        },
+        phone: {
+          contains: phone,
+          mode: "insensitive",
+        },
+      };
+      const [totalItems, clients] = await Promise.all([
+        db.guest.count({
+          where: {
+            addedById: user.id,
+            ...filters,
+          },
+        }),
+        db.guest.findMany({
+          where: {
+            addedById: user.id,
+            ...filters,
+          },
+          skip,
+          take: limit,
+          orderBy: { createdAt: "desc" },
+          include: {
+            membre: true,
+            reservations: true,
+          },
+        }),
+      ]);
+      return c.json({
+        success: true,
+        data: clients,
+        totalItems,
+        pageInfo: {
+          hasPreviousPage: page > 1,
+          hasNextPage: page * limit < totalItems,
         },
       });
-      return c.json({ success: true, data: allClients });
     } catch (error) {
       console.log("error", error);
       return c.json(
