@@ -230,6 +230,58 @@ export const getAllClientsDocs = describeRoute({
   },
 });
 
+// Get Client by ID Documentation
+export const getClientByIdDocs = describeRoute({
+  tags: ["Clients"],
+  summary: "Get a specific client by ID",
+  description:
+    "Retrieve a single client with all their members and reservations by client ID",
+  security: [{ bearerAuth: [] }],
+  params: {
+    id: {
+      type: "string",
+      description: "ID of the client to retrieve",
+      required: true,
+    },
+  },
+  responses: {
+    200: {
+      description: "Client details with relations",
+      content: {
+        "application/json": {
+          schema: zodToJsonSchema(
+            z.object({
+              success: z.boolean(),
+              data: clientWithRelationsSchema,
+            })
+          ),
+        },
+      },
+    },
+    404: {
+      description: "Client not found",
+      content: {
+        "application/json": {
+          schema: zodToJsonSchema(
+            z.object({
+              success: z.boolean(),
+              error: z.string(),
+            })
+          ),
+        },
+      },
+    },
+    500: {
+      description: "Internal server error",
+      content: {
+        "application/json": {
+          schema: zodToJsonSchema(errorResponseSchema),
+        },
+      },
+    },
+  },
+});
+
 // Update Client Documentation
 export const updateClientDocs = describeRoute({
   tags: ["Clients"],

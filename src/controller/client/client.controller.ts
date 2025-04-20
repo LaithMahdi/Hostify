@@ -9,6 +9,7 @@ import {
   createClientDocs,
   deleteClientDocs,
   getAllClientsDocs,
+  getClientByIdDocs,
   getUserClientsDocs,
   patchClientDocs,
   updateClientDocs,
@@ -199,6 +200,36 @@ const app = new Hono()
       }
     }
   )
+  .get("/:id", getClientByIdDocs, authMiddleware, async (c) => {
+    try {
+      const { id } = c.req.param();
+      const client = await db.guest.findUnique({
+        where: { id },
+        include: {
+          membre: true,
+          reservations: true,
+        },
+      });
+      if (!client) {
+        return c.json(
+          {
+            success: false,
+            error: "Client not found.",
+          },
+          404
+        );
+      }
+      return c.json({ success: true, data: client });
+    } catch (error) {
+      return c.json(
+        {
+          success: false,
+          error: "An error occurred while fetching the client.",
+        },
+        500
+      );
+    }
+  })
   .put(
     "update/:id",
     updateClientDocs,
