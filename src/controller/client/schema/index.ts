@@ -2,18 +2,12 @@ import { Gender, Relationship } from "@prisma/client";
 import { z } from "zod";
 
 export const clientSchema = z.object({
-  cin: z.coerce
-    .number()
+  cin: z
+    .string()
     .min(1, { message: "CIN is required." })
-    .max(8, { message: "CIN must be 8 digits." }),
-  numPassport: z.coerce
-    .number()
-    .min(1, {
-      message: "Passport number is required.",
-    })
-    .max(18, {
-      message: "Passport number must be 18 digits.",
-    }),
+    .max(8, { message: "CIN must be 8 digits." })
+    .transform((v) => parseInt(v)),
+  numPassport: z.string().transform((v) => parseInt(v)),
   fullName: z.string().min(1, { message: "Full name is required." }),
   email: z.string().email({ message: "Invalid email address." }),
   phone: z.string().min(1, { message: "Phone number is required." }),

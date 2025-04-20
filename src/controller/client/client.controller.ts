@@ -83,19 +83,23 @@ const app = new Hono()
       const limit = Number(c.req.query("limit") || 10);
 
       const search = c.req.query("search") || "";
-      const cin = c.req.query("cin") || "";
+      const cinQuery = c.req.query("cin") || "";
       const skip = (page - 1) * limit;
+
+      // Parse CIN as number if it exists
+      const cin = cinQuery ? Number(cinQuery) : undefined;
 
       const filters: any = {
         fullName: {
           contains: search,
           mode: "insensitive",
         },
-        phone: {
-          contains: cin,
-          mode: "insensitive",
-        },
+        ...(cin &&
+          !isNaN(cin) && {
+            cin: cin,
+          }),
       };
+
       const [totalItems, clients] = await Promise.all([
         db.guest.count({
           where: {
@@ -117,6 +121,7 @@ const app = new Hono()
           },
         }),
       ]);
+
       return c.json({
         success: true,
         data: clients,
@@ -326,7 +331,9 @@ const app = new Hono()
   .delete("/delete/:id", deleteClientDocs, authMiddleware, async (c) => {
     try {
       const id = c.req.param("id");
-
+      await db.membre.deleteMany({
+        where: { guestId: id },
+      });
       await db.guest.delete({
         where: { id },
       });
