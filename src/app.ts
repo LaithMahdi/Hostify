@@ -11,6 +11,7 @@ import guesthouseRoutes from "@/controller/guest-house/guest.house.controller";
 import roomRoutes from "@/controller/room/room.controller";
 import reservationRoutes from "@/controller/reservation/reservation.controller";
 import clientRoutes from "@/controller/client/client.controller";
+import dashRoutes from "@/controller/dashbored/dash.controller";
 import { env } from "@/dotenv_config";
 
 const app = new Hono();
@@ -34,7 +35,8 @@ app
   .route("/guest-house", guesthouseRoutes)
   .route("/room", roomRoutes)
   .route("/client", clientRoutes)
-  .route("/reservation", reservationRoutes);
+  .route("/reservation", reservationRoutes)
+  .route("/dashbored", dashRoutes);
 app.get(
   "/openapi",
   openAPISpecs(app, {
@@ -111,3 +113,7 @@ app.get(
 export type AppType = typeof app;
 
 export default app;
+function route(arg0: string, dashRoutes: any) {
+  throw new Error("Function not implemented.");
+}
+
