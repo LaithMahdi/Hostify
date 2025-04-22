@@ -86,7 +86,7 @@ const app = new Hono()
       }
     }
   )
-  .get("/all", getAllRoomsDocs, authMiddleware, async (c) => {
+  .get("/all", getAllRoomsDocs, async (c) => {
     try {
       const page = Number(c.req.query("page") || 1);
       const limit = Number(c.req.query("limit") || 10);
