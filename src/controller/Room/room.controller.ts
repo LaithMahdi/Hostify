@@ -113,6 +113,7 @@ const app = new Hono()
           skip,
           take: limit,
           where: filters,
+          include: { images: true },
           orderBy: { createdAt: "desc" },
         }),
       ]);
