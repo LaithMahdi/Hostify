@@ -113,7 +113,7 @@ const app = new Hono()
           skip,
           take: limit,
           where: filters,
-          include: { images: true },
+          include: { images: true, guestHouse: true },
           orderBy: { createdAt: "desc" },
         }),
       ]);
@@ -150,6 +150,7 @@ const app = new Hono()
         include: {
           images: true,
           equipment: true,
+          guestHouse: true,
         },
       });
 
