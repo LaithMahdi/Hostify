@@ -24,3 +24,7 @@ serve({
 });
 
 showRoutes(app);
+
+export default {
+  fetch: app.fetch,
+};
