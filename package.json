@@ -9,7 +9,7 @@
     "reset": "prisma migrate reset",
     "build": "tsc",
     "start": "node dist/index.js",
-    "vercel-build": "prisma generate && prisma migrate deploy && tsc"
+    "vercel-build": "prisma generate && (prisma migrate deploy || prisma migrate resolve --applied [migration_name]) && next build"
   },
   "dependencies": {
     "@faker-js/faker": "^9.5.0",
