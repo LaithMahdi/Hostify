@@ -113,7 +113,3 @@ app.get(
 export type AppType = typeof app;
 
 export default app;
-function route(arg0: string, dashRoutes: any) {
-  throw new Error("Function not implemented.");
-}
-
