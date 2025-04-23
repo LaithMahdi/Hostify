@@ -6,7 +6,9 @@
     "generate": "prisma generate",
     "db": "prisma db push",
     "studio": "prisma studio -p 8881",
-    "reset": "prisma migrate reset"
+    "reset": "prisma migrate reset",
+    "postinstall": "prisma generate",
+    "vercel-build": "prisma generate && prisma migrate deploy && next build"
   },
   "dependencies": {
     "@faker-js/faker": "^9.5.0",
