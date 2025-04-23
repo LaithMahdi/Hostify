@@ -1,13 +1,23 @@
 {
-  "buildCommand": "npm run vercel-build",
-  "installCommand": "npm install",
-  "framework": null,
-  "outputDirectory": "dist",
-  "functions": {
-    "api/**/*": {
-      "memory": 1024,
-      "maxDuration": 10
+  "version": 2,
+  "builds": [
+    {
+      "src": "src/index.ts",
+      "use": "@vercel/node"
     }
-  },
-  "routes": [{ "src": "/(.*)", "dest": "src/index.ts" }]
+  ],
+  "routes": [
+    {
+      "src": "/api/v1/(.*)",
+      "dest": "src/index.ts"
+    },
+    {
+      "src": "/openapi",
+      "dest": "src/index.ts"
+    },
+    {
+      "src": "/api-docs",
+      "dest": "src/index.ts"
+    }
+  ]
 }
