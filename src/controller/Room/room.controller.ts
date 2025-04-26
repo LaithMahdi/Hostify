@@ -163,6 +163,7 @@ const app = new Hono()
         equipment: room?.equipment.map((equipement) => ({
           id: equipement.id,
           name: equipement.name,
+          url: equipement.icon,
         })),
       };
 
