@@ -12,6 +12,7 @@ import { authMiddleware } from "@/middleware/auth_middleware";
 import { env } from "@/dotenv_config";
 import { setCookie } from "hono/cookie";
 import { sign } from "hono/jwt";
+import { Gender, Role } from "@prisma/client";
 
 const app = new Hono()
   // Register endpoint
@@ -41,6 +42,19 @@ const app = new Hono()
         },
       });
 
+      if (role === Role.USER) {
+        await db.guest.create({
+          data: {
+            id: newUser.id,
+            addedById: newUser.id,
+            fullName: newUser.fullName,
+            email: newUser.email,
+            cin: 0,
+            gender: Gender.MALE,
+          },
+        });
+      }
+
       return c.json({ success: true, user: newUser }, 201);
     }
   )
@@ -66,6 +80,7 @@ const app = new Hono()
     const token = await sign(
       {
         id: user.id,
+        name: user.fullName,
         email: user.email,
         role: user.role,
         exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30, // 30 days
