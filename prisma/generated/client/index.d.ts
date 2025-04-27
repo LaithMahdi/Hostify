@@ -9316,7 +9316,11 @@ export namespace Prisma {
 
   export type GuestGroupByOutputType = {
     id: string
+<<<<<<< HEAD
     cin: number
+=======
+    cin: number | null
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     numPassport: number | null
     fullName: string
     email: string | null
@@ -9437,7 +9441,11 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
+<<<<<<< HEAD
       cin: number
+=======
+      cin: number | null
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
       numPassport: number | null
       fullName: string
       email: string | null
@@ -13451,7 +13459,11 @@ export namespace Prisma {
     OR?: GuestWhereInput[]
     NOT?: GuestWhereInput | GuestWhereInput[]
     id?: StringFilter<"Guest"> | string
+<<<<<<< HEAD
     cin?: IntFilter<"Guest"> | number
+=======
+    cin?: IntNullableFilter<"Guest"> | number | null
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     numPassport?: IntNullableFilter<"Guest"> | number | null
     fullName?: StringFilter<"Guest"> | string
     email?: StringNullableFilter<"Guest"> | string | null
@@ -13469,7 +13481,11 @@ export namespace Prisma {
 
   export type GuestOrderByWithRelationInput = {
     id?: SortOrder
+<<<<<<< HEAD
     cin?: SortOrder
+=======
+    cin?: SortOrderInput | SortOrder
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     numPassport?: SortOrderInput | SortOrder
     fullName?: SortOrder
     email?: SortOrderInput | SortOrder
@@ -13487,11 +13503,19 @@ export namespace Prisma {
 
   export type GuestWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+<<<<<<< HEAD
     cin?: number
     numPassport?: number
     AND?: GuestWhereInput | GuestWhereInput[]
     OR?: GuestWhereInput[]
     NOT?: GuestWhereInput | GuestWhereInput[]
+=======
+    AND?: GuestWhereInput | GuestWhereInput[]
+    OR?: GuestWhereInput[]
+    NOT?: GuestWhereInput | GuestWhereInput[]
+    cin?: IntNullableFilter<"Guest"> | number | null
+    numPassport?: IntNullableFilter<"Guest"> | number | null
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     fullName?: StringFilter<"Guest"> | string
     email?: StringNullableFilter<"Guest"> | string | null
     phone?: StringNullableFilter<"Guest"> | string | null
@@ -13504,11 +13528,19 @@ export namespace Prisma {
     addedBy?: XOR<UserScalarRelationFilter, UserWhereInput>
     membre?: MembreListRelationFilter
     reservations?: ReservationListRelationFilter
+<<<<<<< HEAD
   }, "id" | "cin" | "numPassport">
 
   export type GuestOrderByWithAggregationInput = {
     id?: SortOrder
     cin?: SortOrder
+=======
+  }, "id">
+
+  export type GuestOrderByWithAggregationInput = {
+    id?: SortOrder
+    cin?: SortOrderInput | SortOrder
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     numPassport?: SortOrderInput | SortOrder
     fullName?: SortOrder
     email?: SortOrderInput | SortOrder
@@ -13531,7 +13563,11 @@ export namespace Prisma {
     OR?: GuestScalarWhereWithAggregatesInput[]
     NOT?: GuestScalarWhereWithAggregatesInput | GuestScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Guest"> | string
+<<<<<<< HEAD
     cin?: IntWithAggregatesFilter<"Guest"> | number
+=======
+    cin?: IntNullableWithAggregatesFilter<"Guest"> | number | null
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     numPassport?: IntNullableWithAggregatesFilter<"Guest"> | number | null
     fullName?: StringWithAggregatesFilter<"Guest"> | string
     email?: StringNullableWithAggregatesFilter<"Guest"> | string | null
@@ -14174,12 +14210,20 @@ export namespace Prisma {
 
   export type GuestCreateInput = {
     id?: string
+<<<<<<< HEAD
     cin: number
+=======
+    cin?: number | null
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     numPassport?: number | null
     fullName: string
     email?: string | null
     phone?: string | null
+<<<<<<< HEAD
     gender: $Enums.Gender
+=======
+    gender?: $Enums.Gender
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     age?: number | null
     relationship?: $Enums.Relationship
     createdAt?: Date | string
@@ -14191,12 +14235,20 @@ export namespace Prisma {
 
   export type GuestUncheckedCreateInput = {
     id?: string
+<<<<<<< HEAD
     cin: number
+=======
+    cin?: number | null
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     numPassport?: number | null
     fullName: string
     email?: string | null
     phone?: string | null
+<<<<<<< HEAD
     gender: $Enums.Gender
+=======
+    gender?: $Enums.Gender
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     age?: number | null
     relationship?: $Enums.Relationship
     addedById: string
@@ -14208,7 +14260,11 @@ export namespace Prisma {
 
   export type GuestUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+<<<<<<< HEAD
     cin?: IntFieldUpdateOperationsInput | number
+=======
+    cin?: NullableIntFieldUpdateOperationsInput | number | null
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     numPassport?: NullableIntFieldUpdateOperationsInput | number | null
     fullName?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14225,7 +14281,11 @@ export namespace Prisma {
 
   export type GuestUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+<<<<<<< HEAD
     cin?: IntFieldUpdateOperationsInput | number
+=======
+    cin?: NullableIntFieldUpdateOperationsInput | number | null
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     numPassport?: NullableIntFieldUpdateOperationsInput | number | null
     fullName?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14242,12 +14302,20 @@ export namespace Prisma {
 
   export type GuestCreateManyInput = {
     id?: string
+<<<<<<< HEAD
     cin: number
+=======
+    cin?: number | null
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     numPassport?: number | null
     fullName: string
     email?: string | null
     phone?: string | null
+<<<<<<< HEAD
     gender: $Enums.Gender
+=======
+    gender?: $Enums.Gender
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     age?: number | null
     relationship?: $Enums.Relationship
     addedById: string
@@ -14257,7 +14325,11 @@ export namespace Prisma {
 
   export type GuestUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+<<<<<<< HEAD
     cin?: IntFieldUpdateOperationsInput | number
+=======
+    cin?: NullableIntFieldUpdateOperationsInput | number | null
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     numPassport?: NullableIntFieldUpdateOperationsInput | number | null
     fullName?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14271,7 +14343,11 @@ export namespace Prisma {
 
   export type GuestUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
+<<<<<<< HEAD
     cin?: IntFieldUpdateOperationsInput | number
+=======
+    cin?: NullableIntFieldUpdateOperationsInput | number | null
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     numPassport?: NullableIntFieldUpdateOperationsInput | number | null
     fullName?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
@@ -16463,12 +16539,20 @@ export namespace Prisma {
 
   export type GuestCreateWithoutAddedByInput = {
     id?: string
+<<<<<<< HEAD
     cin: number
+=======
+    cin?: number | null
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     numPassport?: number | null
     fullName: string
     email?: string | null
     phone?: string | null
+<<<<<<< HEAD
     gender: $Enums.Gender
+=======
+    gender?: $Enums.Gender
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     age?: number | null
     relationship?: $Enums.Relationship
     createdAt?: Date | string
@@ -16479,12 +16563,20 @@ export namespace Prisma {
 
   export type GuestUncheckedCreateWithoutAddedByInput = {
     id?: string
+<<<<<<< HEAD
     cin: number
+=======
+    cin?: number | null
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     numPassport?: number | null
     fullName: string
     email?: string | null
     phone?: string | null
+<<<<<<< HEAD
     gender: $Enums.Gender
+=======
+    gender?: $Enums.Gender
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     age?: number | null
     relationship?: $Enums.Relationship
     createdAt?: Date | string
@@ -16623,7 +16715,11 @@ export namespace Prisma {
     OR?: GuestScalarWhereInput[]
     NOT?: GuestScalarWhereInput | GuestScalarWhereInput[]
     id?: StringFilter<"Guest"> | string
+<<<<<<< HEAD
     cin?: IntFilter<"Guest"> | number
+=======
+    cin?: IntNullableFilter<"Guest"> | number | null
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     numPassport?: IntNullableFilter<"Guest"> | number | null
     fullName?: StringFilter<"Guest"> | string
     email?: StringNullableFilter<"Guest"> | string | null
@@ -17619,12 +17715,20 @@ export namespace Prisma {
 
   export type GuestCreateWithoutMembreInput = {
     id?: string
+<<<<<<< HEAD
     cin: number
+=======
+    cin?: number | null
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     numPassport?: number | null
     fullName: string
     email?: string | null
     phone?: string | null
+<<<<<<< HEAD
     gender: $Enums.Gender
+=======
+    gender?: $Enums.Gender
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     age?: number | null
     relationship?: $Enums.Relationship
     createdAt?: Date | string
@@ -17635,12 +17739,20 @@ export namespace Prisma {
 
   export type GuestUncheckedCreateWithoutMembreInput = {
     id?: string
+<<<<<<< HEAD
     cin: number
+=======
+    cin?: number | null
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     numPassport?: number | null
     fullName: string
     email?: string | null
     phone?: string | null
+<<<<<<< HEAD
     gender: $Enums.Gender
+=======
+    gender?: $Enums.Gender
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     age?: number | null
     relationship?: $Enums.Relationship
     addedById: string
@@ -17667,7 +17779,11 @@ export namespace Prisma {
 
   export type GuestUpdateWithoutMembreInput = {
     id?: StringFieldUpdateOperationsInput | string
+<<<<<<< HEAD
     cin?: IntFieldUpdateOperationsInput | number
+=======
+    cin?: NullableIntFieldUpdateOperationsInput | number | null
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     numPassport?: NullableIntFieldUpdateOperationsInput | number | null
     fullName?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17683,7 +17799,11 @@ export namespace Prisma {
 
   export type GuestUncheckedUpdateWithoutMembreInput = {
     id?: StringFieldUpdateOperationsInput | string
+<<<<<<< HEAD
     cin?: IntFieldUpdateOperationsInput | number
+=======
+    cin?: NullableIntFieldUpdateOperationsInput | number | null
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     numPassport?: NullableIntFieldUpdateOperationsInput | number | null
     fullName?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17770,12 +17890,20 @@ export namespace Prisma {
 
   export type GuestCreateWithoutReservationsInput = {
     id?: string
+<<<<<<< HEAD
     cin: number
+=======
+    cin?: number | null
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     numPassport?: number | null
     fullName: string
     email?: string | null
     phone?: string | null
+<<<<<<< HEAD
     gender: $Enums.Gender
+=======
+    gender?: $Enums.Gender
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     age?: number | null
     relationship?: $Enums.Relationship
     createdAt?: Date | string
@@ -17786,12 +17914,20 @@ export namespace Prisma {
 
   export type GuestUncheckedCreateWithoutReservationsInput = {
     id?: string
+<<<<<<< HEAD
     cin: number
+=======
+    cin?: number | null
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     numPassport?: number | null
     fullName: string
     email?: string | null
     phone?: string | null
+<<<<<<< HEAD
     gender: $Enums.Gender
+=======
+    gender?: $Enums.Gender
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     age?: number | null
     relationship?: $Enums.Relationship
     addedById: string
@@ -17945,12 +18081,20 @@ export namespace Prisma {
 
   export type GuestCreateManyAddedByInput = {
     id?: string
+<<<<<<< HEAD
     cin: number
+=======
+    cin?: number | null
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     numPassport?: number | null
     fullName: string
     email?: string | null
     phone?: string | null
+<<<<<<< HEAD
     gender: $Enums.Gender
+=======
+    gender?: $Enums.Gender
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     age?: number | null
     relationship?: $Enums.Relationship
     createdAt?: Date | string
@@ -18088,7 +18232,11 @@ export namespace Prisma {
 
   export type GuestUpdateWithoutAddedByInput = {
     id?: StringFieldUpdateOperationsInput | string
+<<<<<<< HEAD
     cin?: IntFieldUpdateOperationsInput | number
+=======
+    cin?: NullableIntFieldUpdateOperationsInput | number | null
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     numPassport?: NullableIntFieldUpdateOperationsInput | number | null
     fullName?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18104,7 +18252,11 @@ export namespace Prisma {
 
   export type GuestUncheckedUpdateWithoutAddedByInput = {
     id?: StringFieldUpdateOperationsInput | string
+<<<<<<< HEAD
     cin?: IntFieldUpdateOperationsInput | number
+=======
+    cin?: NullableIntFieldUpdateOperationsInput | number | null
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     numPassport?: NullableIntFieldUpdateOperationsInput | number | null
     fullName?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18120,7 +18272,11 @@ export namespace Prisma {
 
   export type GuestUncheckedUpdateManyWithoutAddedByInput = {
     id?: StringFieldUpdateOperationsInput | string
+<<<<<<< HEAD
     cin?: IntFieldUpdateOperationsInput | number
+=======
+    cin?: NullableIntFieldUpdateOperationsInput | number | null
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     numPassport?: NullableIntFieldUpdateOperationsInput | number | null
     fullName?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18474,7 +18630,11 @@ export namespace Prisma {
 
   export type GuestUpdateWithoutReservationsInput = {
     id?: StringFieldUpdateOperationsInput | string
+<<<<<<< HEAD
     cin?: IntFieldUpdateOperationsInput | number
+=======
+    cin?: NullableIntFieldUpdateOperationsInput | number | null
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     numPassport?: NullableIntFieldUpdateOperationsInput | number | null
     fullName?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18490,7 +18650,11 @@ export namespace Prisma {
 
   export type GuestUncheckedUpdateWithoutReservationsInput = {
     id?: StringFieldUpdateOperationsInput | string
+<<<<<<< HEAD
     cin?: IntFieldUpdateOperationsInput | number
+=======
+    cin?: NullableIntFieldUpdateOperationsInput | number | null
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     numPassport?: NullableIntFieldUpdateOperationsInput | number | null
     fullName?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18506,7 +18670,11 @@ export namespace Prisma {
 
   export type GuestUncheckedUpdateManyWithoutReservationsInput = {
     id?: StringFieldUpdateOperationsInput | string
+<<<<<<< HEAD
     cin?: IntFieldUpdateOperationsInput | number
+=======
+    cin?: NullableIntFieldUpdateOperationsInput | number | null
+>>>>>>> 5ddbb76a0950bc1cfe3d0af97cdba5be37f8d388
     numPassport?: NullableIntFieldUpdateOperationsInput | number | null
     fullName?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null

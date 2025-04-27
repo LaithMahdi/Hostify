@@ -92,12 +92,12 @@ model Image {
 
 model Guest {
   id          String   @id @default(cuid())
-  cin         Int   @unique
-  numPassport Int?  @unique
+  cin         Int? @default(0)   
+  numPassport Int? @default(0) 
   fullName    String
   email       String?
   phone       String?
-  gender      Gender
+  gender      Gender  @default(MALE)
   age         Int?
   relationship Relationship @default(OTHER)
   addedBy     User     @relation(fields: [addedById], references: [id])
