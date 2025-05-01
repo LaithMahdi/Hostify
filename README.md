@@ -12,6 +12,7 @@ Before setting up the project, ensure you have the following installed:
 - [Prisma](https://www.prisma.io/) (installed globally via `bun add -g prisma`)
 - [Git](https://git-scm.com/) (for version control)
 - [PostgreSQL](https://www.postgresql.org/) (database)
+- [Docker](https://www.docker.com/) _(optional, for containerized setup)_
 - [Postman](https://www.postman.com/) _(optional, for API testing)_
 
 ---
@@ -60,10 +61,44 @@ This runs the server in watch mode, restarting automatically on code changes.
 
 ---
 
+## 🐳 Docker Setup (Optional)
+
+You can run Hostify in a fully containerized environment using Docker and Docker Compose.
+
+### 🔹 Build and Start Services
+
+```bash
+docker-compose up -d
+```
+
+This starts:
+
+- The Hostify app server (exposed on port `3000`)
+- The PostgreSQL database (on port `5432`)
+- Prisma Studio (on port `8881`)
+
+> ⚠️ Make sure port `3000` is not already in use.
+
+### 🔹 Access Running Services
+
+| Service       | URL                             |
+| ------------- | ------------------------------- |
+| Hostify App   | http://localhost:3000           |
+| Prisma Studio | http://localhost:8881           |
+| PostgreSQL DB | Host: `localhost`, Port: `5432` |
+
+### 🔹 Stop Containers
+
+```bash
+docker-compose down
+```
+
+---
+
 ## 📌 API Documentation
 
-API documentation is available at:
-👉 [API Docs](http://localhost:3005/api-docs)
+API documentation is available at:  
+👉 [http://localhost:3005/api-docs](http://localhost:3005/api-docs)
 
 ### 📍 API Endpoints Overview
 
@@ -166,8 +201,8 @@ This project is licensed under the **MIT License**. See the `LICENSE` file for d
 
 If you have any questions or run into issues:
 
-- Open an issue on **GitHub**.
-- Reach out to me directly.
+- Open an issue on **GitHub**
+- Reach out to me directly
 
 ---
 
