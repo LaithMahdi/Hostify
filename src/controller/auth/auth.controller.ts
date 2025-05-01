@@ -97,7 +97,22 @@ const app = new Hono()
       maxAge: 60 * 60 * 24 * 30,
     });
 
-    return c.json({ success: true, token }, 200);
+    return c.json(
+      {
+        success: true,
+        data: {
+          token: token,
+          user: {
+            id: user.id,
+            fullName: user.fullName,
+            email: user.email,
+            role: user.role,
+          },
+        },
+        message: "Login successful",
+      },
+      200
+    );
   })
   // Me endpoint
   .get("/me", meDocs, authMiddleware, async (c) => {

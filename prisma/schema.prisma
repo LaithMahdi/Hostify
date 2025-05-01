@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "./generated/client"
 }
 
 datasource db {
@@ -116,18 +115,21 @@ model Membre{
   isManier Boolean @default(false)
   guestId String
   guest Guest @relation(fields: [guestId], references: [id])
+  reservationId String?
+  reservation Reservation? @relation(fields: [reservationId], references: [id])
   createdAt DateTime @default(now())
 }
 
 model Reservation {
   id          String   @id @default(cuid())
-  checkIn     DateTime
-  checkOut    DateTime
+  checkIn     String
+  checkOut    String
   totalPrice  Float
   room        Room     @relation(fields: [roomId], references: [id])
   roomId      Int
   client      User     @relation("ClientReservations", fields: [clientId], references: [id])
   clientId    String
+  members      Membre[]
   guests      Guest[]  
   status      ReservationStatus @default(PENDING)
   createdAt   DateTime @default(now())
