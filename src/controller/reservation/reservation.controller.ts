@@ -4,7 +4,7 @@ import { patchReservationSchema, reservationSchema } from "./schema";
 import { authMiddleware } from "@/middleware/auth_middleware";
 import { db } from "@/lib/prisma";
 import { roleMiddleware } from "@/middleware/role_middleware";
-import { Role } from "@prisma/client";
+import { Role, RoomStatus } from "@prisma/client";
 import {
   createReservationDocs,
   deleteReservationDocs,
@@ -94,6 +94,16 @@ const app = new Hono()
             status,
             totalPrice,
             clientId: user.id,
+          },
+        });
+
+        await db.room.update({
+          where: { id: room.id },
+          data: {
+            reservations: {
+              connect: { id: reservation.id },
+            },
+            status: RoomStatus.BOOKED,
           },
         });
 
