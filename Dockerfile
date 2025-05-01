@@ -1,32 +1,38 @@
 # Use Node.js LTS as base image
 FROM node:20-slim AS base
 
-# Install dependencies for Prisma and other packages
-RUN apt-get update && apt-get install -y openssl
+# Install required packages including unzip
+RUN apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get update --fix-missing && \
+    apt-get install -y curl openssl unzip && \
+    curl -fsSL https://bun.sh/install | bash
 
 # Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY package.json package-lock.json* ./
+# Add Bun to PATH
+ENV PATH="/root/.bun/bin:$PATH"
 
-# Install dependencies
-RUN npm ci
+# Copy package files
+COPY bun.lockb ./
+COPY package.json ./
+
+# Install dependencies using Bun
+RUN bun install --frozen-lockfile
 
 # Copy the rest of the code
 COPY . .
 
 # Generate Prisma client
-RUN npm run generate
+RUN bun run generate
 
 # Development stage
 FROM base AS development
 ENV NODE_ENV=development
-CMD ["npm", "run", "dev"]
+CMD ["bun", "run", "dev"]
 
 # Production stage
 FROM base AS production
 ENV NODE_ENV=production
-# Build the application if needed (add your build step here)
-# RUN npm run build
-CMD ["tsx", "src/index.ts"]
+CMD ["bun", "run", "start"]

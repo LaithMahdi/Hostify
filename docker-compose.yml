@@ -6,7 +6,7 @@ services:
       context: .
       target: development
     ports:
-      - "3000:3000"
+      - "3001:3000"
     volumes:
       - .:/app
       - /app/node_modules
@@ -15,7 +15,7 @@ services:
       - NODE_ENV=development
     depends_on:
       - db
-    command: npm run dev
+    command: bun run dev
 
   db:
     image: postgres:15
@@ -39,7 +39,7 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/hostify
     depends_on:
       - db
-    command: npm run studio
+    command: bun run studio
 
 volumes:
   postgres_data:
