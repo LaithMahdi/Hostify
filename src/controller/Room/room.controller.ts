@@ -114,7 +114,7 @@ const app = new Hono()
           take: limit,
           where: filters,
           include: { images: true, guestHouse: true },
-          orderBy: { createdAt: "desc" },
+          orderBy: { updatedAt: "desc" },
         }),
       ]);
 
