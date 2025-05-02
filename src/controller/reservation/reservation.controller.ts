@@ -85,8 +85,8 @@ const app = new Hono()
         // ✅ If all validations pass, proceed to create the reservation
         const reservation = await db.reservation.create({
           data: {
-            checkIn,
-            checkOut,
+            checkIn: checkIn.toISOString(),
+            checkOut: checkOut.toISOString(),
             members: {
               connect: membersUser.map((m) => ({ id: m.id })),
             },
@@ -188,8 +188,8 @@ const app = new Hono()
         const reservation = await db.reservation.update({
           where: { id: reservationId },
           data: {
-            checkIn,
-            checkOut,
+            checkIn: checkIn.toISOString(),
+            checkOut: checkOut.toISOString(),
             members: {
               connect: membersUser.map((m) => ({ id: m.id })),
             },
@@ -334,7 +334,7 @@ const app = new Hono()
 
         if (clientName) {
           filters.client = {
-            name: {
+            fullName: {
               contains: clientName,
               mode: "insensitive",
             },
