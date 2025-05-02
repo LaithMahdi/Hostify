@@ -9,6 +9,9 @@ const serverSchema = z.object({
   JWT_SECRET: z.string().min(1),
   AUTH_COOKIE: z.string().min(1),
   NEXT_FRONT_URL: z.string().min(1),
+  ADMIN_EMAIL: z.string().email().min(1),
+  ADMIN_PASSWORD: z.string().min(1),
+  ADMIN_NAME: z.string().min(1),
 });
 
 const _serverEnv = serverSchema.safeParse(process.env);
@@ -21,12 +24,23 @@ if (!_serverEnv.success) {
   throw new Error("Invalid environment variables");
 }
 
-const { PORT, JWT_SECRET, AUTH_COOKIE, NEXT_FRONT_URL } = _serverEnv.data;
+const {
+  PORT,
+  JWT_SECRET,
+  AUTH_COOKIE,
+  NEXT_FRONT_URL,
+  ADMIN_EMAIL,
+  ADMIN_PASSWORD,
+  ADMIN_NAME,
+} = _serverEnv.data;
 
 export const env = {
   PORT,
   JWT_SECRET,
   AUTH_COOKIE,
   NEXT_FRONT_URL,
+  ADMIN_EMAIL,
+  ADMIN_PASSWORD,
+  ADMIN_NAME,
 };
 console.log("✅ Environment variables loaded");

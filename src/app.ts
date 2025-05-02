@@ -55,7 +55,7 @@ app.get(
 
         ## Base URL  
         All API requests should be prefixed with the base URL:  
-        **\`http://localhost:3005/api/v1\`**  
+        **\`http://localhost:${env.PORT}/api/v1\`**  
 
         ## Key Features  
         - Secure authentication with JWT & cookies  
@@ -76,7 +76,7 @@ app.get(
         },
       },
       servers: [
-        { url: "http://localhost:3005/", description: "Local Server" },
+        { url: `http://localhost:${env.PORT}/`, description: "Local Server" },
         { url: "https://api.hostify.com/", description: "Production Server" },
       ],
       security: [
@@ -104,8 +104,8 @@ app.get(
   apiReference({
     theme: "bluePlanet",
     withDefaultFonts: true,
-    spec: { url: "http://localhost:3005/openapi" },
-    baseServerURL: "http://localhost:3005/api/v1",
+    spec: { url: `http://localhost:${env.PORT}/openapi` },
+    baseServerURL: `http://localhost:${env.PORT}/api/v1`,
     darkMode: true,
   })
 );
