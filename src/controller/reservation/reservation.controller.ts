@@ -219,40 +219,19 @@ const app = new Hono()
     async (c) => {
       try {
         const reservationId = c.req.param("id");
-        const { members, roomId, status, totalPrice } = await c.req.valid(
-          "json"
-        );
-
-        const room = await db.room.findUnique({
-          where: { id: Number(roomId) },
-          include: { reservations: true },
-        });
-
-        if (!room) {
-          return c.json({ success: false, error: "Room not found" }, 404);
-        }
-
-        const membersUser = await db.membre.findMany({
-          where: {
-            id: { in: Array.isArray(members) ? members.map(Number) : [] },
-          },
-        });
+        const { status } = await c.req.valid("json");
 
         // ✅ If all validations pass, proceed to create the reservation
         const reservation = await db.reservation.update({
           where: { id: reservationId },
           data: {
-            members: {
-              connect: membersUser.map((m) => ({ id: m.id })),
-            },
-            roomId: Number(roomId),
             status,
-            totalPrice,
           },
         });
 
         return c.json({ success: true, reservation }, 200);
       } catch (error) {
+        console.error(error);
         return c.json(
           { success: false, error: "Error patching reservation" },
           500
