@@ -36,15 +36,13 @@ bun install
 
 Create a `.env` file in the root directory and configure it using `.env.example` as a template:
 
-```bash
+```env
 DATABASE_URL="your-database-connection-string"
 ```
 
 Replace placeholders with actual values.
 
 ### 4️⃣ Set Up the Database
-
-Run the following commands:
 
 ```bash
 bun run generate  # Generate Prisma client
@@ -57,7 +55,37 @@ bun run db        # Apply schema to the database
 bun run dev
 ```
 
-This runs the server in watch mode, restarting automatically on code changes.
+This runs the server in watch mode. ✅ When the API starts for the **first time**, it will **automatically seed initial data** into the database.
+
+---
+
+## 🌱 Initial Seeding (Runs Automatically on First Start)
+
+When the API runs for the first time, it will seed the following default data:
+
+- `seedUsers()`  
+  ➤ Creates 3 users:
+
+  - **Admin**
+  - **Owner**
+  - **Guest**
+
+- `seedEquipments()`  
+  ➤ Adds predefined equipment types for guest houses.
+
+- `seedData()`  
+  ➤ Seeds a sample **guest house**, **room**, and **contact info**.
+
+You do **not need** to run any manual script — this process is handled automatically inside the `init()` function of the server setup:
+
+```ts
+const init = async () => {
+  await seedUsers();
+  await seedEquipments();
+  await seedData();
+  console.log("✅ Seeding completed.");
+};
+```
 
 ---
 
@@ -73,13 +101,11 @@ docker-compose up -d
 
 This starts:
 
-- The Hostify app server (exposed on port `3000`)
-- The PostgreSQL database (on port `5432`)
-- Prisma Studio (on port `8881`)
+- Hostify app server (port `3000`)
+- PostgreSQL DB (port `5432`)
+- Prisma Studio (port `8881`)
 
-> ⚠️ Make sure port `3000` is not already in use.
-
-### 🔹 Access Running Services
+### 🔹 Access Services
 
 | Service       | URL                             |
 | ------------- | ------------------------------- |
@@ -97,57 +123,81 @@ docker-compose down
 
 ## 📌 API Documentation
 
-API documentation is available at:  
 👉 [http://localhost:3005/api-docs](http://localhost:3005/api-docs)
 
 ### 📍 API Endpoints Overview
 
-| Method | Endpoint                  | Description                      |
-| ------ | ------------------------- | -------------------------------- |
-| POST   | `/auth/register`          | Register a new user              |
-| POST   | `/auth/login`             | Log in a user                    |
-| GET    | `/auth/me`                | Get authenticated user info      |
-| POST   | `/equipment/create`       | Create new equipment             |
-| GET    | `/equipment/all`          | Get all equipment (paginated)    |
-| GET    | `/equipment/:id`          | Get equipment by ID              |
-| PUT    | `/equipment/update/:id`   | Update equipment by ID           |
-| DELETE | `/equipment/delete/:id`   | Delete equipment by ID           |
-| PATCH  | `/equipment/patch/:id`    | Partially update equipment       |
-| POST   | `/guest-house/create`     | Create a new guest house         |
-| GET    | `/guest-house/all`        | Get all guest houses (paginated) |
-| GET    | `/guest-house/:id`        | Get guest house by ID            |
-| PUT    | `/guest-house/update/:id` | Update guest house by ID         |
-| DELETE | `/guest-house/delete/:id` | Delete guest house by ID         |
-| PATCH  | `/guest-house/patch/:id`  | Partially update guest house     |
-| POST   | `/room/create`            | Create a new room                |
-| GET    | `/room/all`               | Get all rooms (paginated)        |
-| GET    | `/room/:id`               | Get room by ID                   |
-| GET    | `/room/my/`               | Get rooms associated with user   |
-| PUT    | `/room/update/:id`        | Update room by ID                |
-| DELETE | `/room/delete/:id`        | Delete room by ID                |
-| PATCH  | `/room/patch/:id`         | Partially update room by ID      |
+➡️ Visit the OpenAPI docs for a complete list, or explore common routes like:
+
+## 🔐 Auth Endpoints
+
+- `POST    /api/v1/auth/register` - Register a new user
+- `POST    /api/v1/auth/login` - Log in a user
+- `GET     /api/v1/auth/me` - Get authenticated user info
+
+## 🧰 Equipment Endpoints
+
+- `POST    /api/v1/equipment/create` - Create new equipment
+- `GET     /api/v1/equipment/all` - Get all equipment (paginated)
+- `GET     /api/v1/equipment/:id` - Get equipment by ID
+- `PUT     /api/v1/equipment/update/:id` - Update equipment by ID
+- `DELETE  /api/v1/equipment/delete/:id` - Delete equipment by ID
+- `PATCH   /api/v1/equipment/patch/:id` - Partially update equipment
+
+## 🏡 Guest House Endpoints
+
+- `POST    /api/v1/guest-house/create` - Create a new guest house
+- `GET     /api/v1/guest-house/all` - Get all guest houses (paginated)
+- `GET     /api/v1/guest-house/:id` - Get guest house by ID
+- `PUT     /api/v1/guest-house/update/:id` - Update guest house by ID
+- `DELETE  /api/v1/guest-house/delete/:id` - Delete guest house by ID
+- `PATCH   /api/v1/guest-house/patch/:id` - Partially update guest house
+
+## 🛏 Room Endpoints
+
+- `POST    /api/v1/room/create` - Create a new room
+- `GET     /api/v1/room/all` - Get all rooms (paginated)
+- `GET     /api/v1/room/:id` - Get room by ID
+- `GET     /api/v1/room/my/` - Get rooms associated with the user
+- `PUT     /api/v1/room/update/:id` - Update room by ID
+- `DELETE  /api/v1/room/delete/:id` - Delete room by ID
+- `PATCH   /api/v1/room/patch/:id` - Partially update room
+
+## 👤 Client Endpoints
+
+- `POST    /api/v1/client/create` - Create a new client
+- `GET     /api/v1/client/added-by` - Get clients added by current user
+- `GET     /api/v1/client/all` - Get all clients
+- `GET     /api/v1/client/:id` - Get client by ID
+- `PUT     /api/v1/client/update/:id` - Update client by ID
+- `PATCH   /api/v1/client/patch/:id` - Partially update client by ID
+- `DELETE  /api/v1/client/delete/:id` - Delete client by ID
+
+## 📅 Reservation Endpoints
+
+- `POST    /api/v1/reservation/create` - Create a new reservation
+- `PUT     /api/v1/reservation/update/:id` - Update reservation by ID
+- `PATCH   /api/v1/reservation/patch/:id` - Partially update reservation by ID
+- `DELETE  /api/v1/reservation/delete/:id` - Delete reservation by ID
+- `GET     /api/v1/reservation/all` - Get all reservations
+- `GET     /api/v1/reservation/owner` - Get reservations associated with the owner
+- `GET     /api/v1/reservation/client` - Get reservations associated with the client
 
 ---
 
 ## 🛠️ API Testing with Postman
 
-### 🔹 Import the Postman Collection
+### 🔹 Import the Collection
 
 1. Open Postman.
-2. Click on **Import**.
-3. Select the `Hostify.postman_collection.json` file from the root directory.
+2. Click **Import**, then select `Hostify.postman_collection.json`.
 
-### 🔹 Configure Postman Environment Variables
+### 🔹 Setup Environment
 
 1. Create a new environment (e.g., **Hostify Local**).
-2. Add the following variables:
-   - `base_url` → `http://localhost:3000`
-   - `access_token` → _(Leave blank, it will populate after login.)_
-
-### 🔹 Running Requests
-
-1. Start with the authentication requests to log in and obtain a token.
-2. Use the token for secured endpoints.
+2. Add:
+   - `base_url`: `http://localhost:3000`
+   - `access_token`: _(left blank — fills in after login)_
 
 ---
 
@@ -159,50 +209,29 @@ API documentation is available at:
 | `bun run generate` | Generate the Prisma client                      |
 | `bun run db`       | Push the Prisma schema to the database          |
 | `bun run studio`   | Open Prisma Studio (DB management) at port 8881 |
-| `bun run reset`    | Reset the database (⚠️ Deletes all data!)       |
-
-### 📌 Access Prisma Studio
-
-```bash
-bun run studio
-```
-
-Navigate to [http://localhost:8881](http://localhost:8881) in your browser.
-
-### ⚠️ Reset the Database
-
-```bash
-bun run reset
-```
-
-🚨 **Warning**: This will erase all data and reapply the schema.
+| `bun run reset`    | ⚠️ Reset the database (deletes all data)        |
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions! Follow these steps:
-
-1. **Fork** the repository.
-2. **Create** a new branch for your feature or bugfix.
-3. **Commit** your changes with clear messages.
-4. **Push** to your forked repository.
-5. **Submit** a pull request.
+1. Fork the repo
+2. Create a feature/bugfix branch
+3. Commit clearly
+4. Push & submit a pull request
 
 ---
 
 ## 📜 License
 
-This project is licensed under the **MIT License**. See the `LICENSE` file for details.
+MIT License — see `LICENSE` for full details.
 
 ---
 
-## ❓ Questions or Issues?
+## ❓ Questions?
 
-If you have any questions or run into issues:
-
-- Open an issue on **GitHub**
-- Reach out to me directly
+- Open an issue on GitHub
+- Reach out directly to the maintainer
 
 ---
 
