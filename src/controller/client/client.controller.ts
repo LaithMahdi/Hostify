@@ -56,6 +56,9 @@ const app = new Hono()
             },
             addedById: user.id,
           },
+          include: {
+            membre: true,
+          },
         });
         return c.json(
           {
@@ -276,6 +279,9 @@ const app = new Hono()
               })),
             },
             addedById: user.id,
+          },
+          include: {
+            membre: true,
           },
         });
         return c.json({
